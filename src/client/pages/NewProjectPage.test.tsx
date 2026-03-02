@@ -67,6 +67,7 @@ function renderPage() {
   return render(
     <MemoryRouter initialEntries={["/new"]}>
       <Routes>
+        <Route path="/" element={<div data-testid="home" />} />
         <Route path="/new" element={<><Toaster /><NewProjectPage /></>} />
         <Route path="/projects/:id" element={<div data-testid="project-detail" />} />
       </Routes>
@@ -146,11 +147,11 @@ describe("NewProjectPage", () => {
     });
   });
 
-  it("Cancel button navigates to home", () => {
+  it("Cancel button navigates to home", async () => {
     (fetchSampleSpecs as ReturnType<typeof vi.fn>).mockResolvedValue(sampleSpecs);
-    const { container } = renderPage();
+    renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-    expect(container.ownerDocument.location.pathname).toBe("/");
+    await waitFor(() => expect(screen.getByTestId("home")).toBeTruthy());
   });
 
   it("shows inline validation error when submitting with empty name", async () => {
