@@ -14,7 +14,7 @@
 
 ---
 
-- [ ] Create `src/client/pages/NewProjectPage.tsx` — page scaffold with React Hook Form (`useForm`) and a Zod schema: `name` (required string, min 1, max 100 chars); `specName` (required non-empty string); fetches sample specs via `fetchSampleSpecs()` on mount; stores `specs`, `specsLoading`, and `specsError` state
+- [x] Create `src/client/pages/NewProjectPage.tsx` — page scaffold with React Hook Form (`useForm`) and a Zod schema: `name` (required string, min 1, max 100 chars); `specName` (required non-empty string); fetches sample specs via `fetchSampleSpecs()` on mount; stores `specs`, `specsLoading`, and `specsError` state
 - [ ] Add the name field and sample spec Select to `NewProjectPage` — name field: shadcn/ui `Input` auto-focused, inline error below on validation failure; spec Select: disabled with placeholder "Loading specs…" while `specsLoading`; when specs are empty shows "No specs available — upload specs in Admin first" as a muted paragraph and disables the submit button; when populated, each `SelectItem` shows the filename without the `.md` extension and its value is the full filename (e.g. `"minimal-node-api.md"`)
 - [ ] Add form submit and action buttons to `NewProjectPage` — `handleSubmit` calls `createProject({ name, specName })`; while submitting, the "Create Project" button is disabled and shows a `Loader2` spinner icon; on success navigates to `/projects/${project.id}`; on error calls `toast.error(...)`; the "Cancel" button always navigates to `/`; page heading: "New Project"
 - [ ] Register `NewProjectPage` in `src/client/App.tsx` — replace the placeholder `<div>New Project</div>` on route `/projects/new` with `<NewProjectPage />`; add the import
