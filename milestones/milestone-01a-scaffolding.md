@@ -30,6 +30,6 @@
 
 - [x] Create Blob Storage client module `src/server/lib/blobClient.ts`: derive account URL as `https://stautodev${STAMP_ID}.blob.core.windows.net`; initialize `BlobServiceClient` with `DefaultAzureCredential`; export `getBlobServiceClient()` returning the singleton client
 
-- [ ] Define shared TypeScript types in `src/shared/types.ts`: `Project` interface (id: string, organizationId: string, type: "project", name: string, specName: string, createdAt: string, latestRunStatus: "pending" | "running" | "succeeded" | "failed" | null, runCount: number); `ApiError` interface ({ error: string }); `SampleSpec` interface (name: string, size: number, lastModified: string)
+- [x] Define shared TypeScript types in `src/shared/types.ts`: `Project` interface (id: string, organizationId: string, type: "project", name: string, specName: string, createdAt: string, latestRunStatus: "pending" | "running" | "succeeded" | "failed" | null, runCount: number); `ApiError` interface ({ error: string }); `SampleSpec` interface (name: string, size: number, lastModified: string)
 
 - [ ] Configure vitest: install `vitest`; add `"test": "vitest run"` script to `package.json`; create `vitest.config.ts` (environment: node, include `src/**/*.test.ts`); write placeholder test `src/server/lib/health.test.ts` that asserts `1 + 1 === 2` (trivially passes to confirm the test runner works)
