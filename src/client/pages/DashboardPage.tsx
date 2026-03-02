@@ -16,37 +16,6 @@ function ProjectSkeleton() {
   );
 }
 
-function ProjectRow({ project }: { project: Project }) {
-  const navigate = useNavigate();
-  return (
-    <button
-      type="button"
-      onClick={() => navigate(`/projects/${project.id}`)}
-      className="w-full text-left flex items-center justify-between px-4 py-3 rounded-md border hover:bg-accent hover:text-accent-foreground transition-colors"
-    >
-      <div>
-        <p className="font-medium">{project.name}</p>
-        <p className="text-sm text-muted-foreground">
-          {project.specName} · {formatDate(project.createdAt)}
-        </p>
-      </div>
-      <span
-        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-          project.latestRunStatus === "succeeded"
-            ? "bg-green-100 text-green-800"
-            : project.latestRunStatus === "failed"
-              ? "bg-red-100 text-red-800"
-              : project.latestRunStatus === "running"
-                ? "bg-blue-100 text-blue-800"
-                : "bg-muted text-muted-foreground"
-        }`}
-      >
-        {project.latestRunStatus ?? "no runs"}
-      </span>
-    </button>
-  );
-}
-
 function DesktopTable({ projects, navigate }: { projects: Project[]; navigate: (path: string) => void }) {
   const sorted = [...projects].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -74,6 +43,31 @@ function DesktopTable({ projects, navigate }: { projects: Project[]; navigate: (
     </table>
   );
 }
+
+function MobileCardList({ projects, navigate }: { projects: Project[]; navigate: (path: string) => void }) {
+  const sorted = [...projects].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  return (
+    <div className="space-y-2">
+      {sorted.map((p) => (
+        <div
+          key={p.id}
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate(`/projects/${p.id}`)}
+          onKeyDown={(e) => e.key === "Enter" && navigate(`/projects/${p.id}`)}
+          className="min-h-[44px] flex flex-col justify-center px-4 py-3 rounded-md border cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+        >
+          <p className="font-bold">{p.name}</p>
+          <p className="text-sm text-muted-foreground">{formatDate(p.createdAt)}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function DashboardPage() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -126,9 +120,14 @@ function DesktopTable({ projects, navigate }: { projects: Project[]; navigate: (
               </Button>
             </div>
           ) : (
-            <div className="hidden md:block">
-              <DesktopTable projects={projects} navigate={navigate} />
-            </div>
+            <>
+              <div className="hidden md:block">
+                <DesktopTable projects={projects} navigate={navigate} />
+              </div>
+              <div className="block md:hidden">
+                <MobileCardList projects={projects} navigate={navigate} />
+              </div>
+            </>
           )}
         </div>
       )}
