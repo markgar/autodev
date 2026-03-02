@@ -52,7 +52,34 @@ export async function createProject(data: { name: string; specName: string }): P
   return res.json();
 }
 
-export function formatDate(iso: string): string {
+export async function fetchSampleSpecContent(name: string): Promise<{ name: string; content: string }> {
+  const res = await fetch(`/api/sample-specs/${encodeURIComponent(name)}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function uploadSampleSpec(file: File): Promise<{ name: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch("/api/sample-specs", { method: "POST", body: formData });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function deleteSampleSpec(name: string): Promise<void> {
+  const res = await fetch(`/api/sample-specs/${encodeURIComponent(name)}`, { method: "DELETE" });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `HTTP ${res.status}`);
+  }
+}
+
   const diffMs = Date.now() - new Date(iso).getTime();
   if (diffMs <= 0) return "just now";
 

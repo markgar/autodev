@@ -15,7 +15,7 @@
 
 - [x] Add `formatFileSize(bytes: number): string` helper to `src/client/lib/utils.ts` — converts bytes to human-readable string (e.g. `1023` → `"1,023 B"`, `12400` → `"12.1 KB"`, `1500000` → `"1.4 MB"`)
 
-- [ ] Add `fetchSampleSpecContent(name: string): Promise<{ name: string; content: string }>`, `uploadSampleSpec(file: File): Promise<{ name: string }>`, and `deleteSampleSpec(name: string): Promise<void>` API helpers to `src/client/lib/api.ts` following the existing fetch-wrapper pattern (throw Error on non-ok, parse `{ error }` body)
+- [x] Add `fetchSampleSpecContent(name: string): Promise<{ name: string; content: string }>`, `uploadSampleSpec(file: File): Promise<{ name: string }>`, and `deleteSampleSpec(name: string): Promise<void>` API helpers to `src/client/lib/api.ts` following the existing fetch-wrapper pattern (throw Error on non-ok, parse `{ error }` body)
 
 - [ ] Fix `src/client/pages/DashboardPage.test.tsx` navigation tests: replace `await waitFor(() => screen.getByRole('button', { name: 'New Project' })); fireEvent.click(screen.getByRole('button', ...))` with `const btn = await screen.findByRole('button', { name: 'New Project' }); fireEvent.click(btn)` (issue #56)
 
