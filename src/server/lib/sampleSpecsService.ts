@@ -32,8 +32,8 @@ async function getSampleSpecContent(name: string): Promise<string | null> {
     const buffer = await blockBlobClient.downloadToBuffer(0, MAX_SPEC_BYTES);
     return buffer.toString("utf-8");
   } catch (err: unknown) {
-    const code = (err as { code?: string; statusCode?: number })?.code ?? (err as { code?: string; statusCode?: number })?.statusCode;
-    if (code === "BlobNotFound" || code === 404) {
+    const e = err as { code?: string; statusCode?: number };
+    if (e?.code === "BlobNotFound" || e?.statusCode === 404) {
       return null;
     }
     throw err;

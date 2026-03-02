@@ -50,6 +50,9 @@ function getRouteHandler(method: "get" | "post", path: string) {
   const layer = (projectsRouter.stack as any[]).find(
     (l) => l.route?.path === path && l.route?.methods?.[method]
   );
+  if (!layer) {
+    throw new Error(`No ${method.toUpperCase()} handler found for path "${path}" in projectsRouter`);
+  }
   return layer.route.stack[0].handle;
 }
 
