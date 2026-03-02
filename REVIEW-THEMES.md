@@ -1,6 +1,6 @@
 # Review Themes
 
-Last updated: Projects API
+Last updated: Sample Specs API — Service Layer
 
 1. **tsconfig rootDir/include mismatch** — When `tsconfig.server.json` includes files outside `rootDir` (e.g., `src/shared`), set `rootDir` to the common ancestor (`src`), then update all path-dependent scripts (e.g., `start`) to match the new output layout (`dist/server/server/index.js`).
 2. **Start script not updated after tsconfig changes** — Any change to `rootDir` or `outDir` in a tsconfig must be followed immediately by updating every `package.json` script that references compiled output paths; the build succeeding is not sufficient verification.
@@ -17,3 +17,6 @@ Last updated: Projects API
 13. **Cosmos SDK `resource` is typed `T | undefined` — always null-check after create/read** — `items.create()` and `.read()` return `resource` as `T | undefined`; never use `as T` to silence the type; guard with `if (!resource) throw new Error(...)` so a missing body produces a clear error rather than `undefined` masquerading as the entity downstream.
 14. **Multi-step handler writes are not atomic — plan for partial failure** — When a handler chains two writes to separate systems (e.g., Cosmos then Blob Storage), a failure on the second leaves the first committed; always include a best-effort rollback or cleanup in the `catch` block to avoid silent orphaned records accumulating in the database.
 15. **`downloadToBuffer()` without size bounds is an OOM risk** — Azure Blob SDK's `downloadToBuffer()` with no arguments loads the entire blob into a single `Buffer`; always pass an explicit maximum byte count (e.g., `downloadToBuffer(0, MAX_BYTES)`) or check `contentLength` before downloading to protect the server under large or adversarial blobs.
+16. **New service modules must include their own tests in the same milestone** — When a milestone introduces a `*Service.ts`, its `*Service.test.ts` must be in the same set of commits; shipping a service without tests and patching in a separate tester pass leaves the milestone non-self-contained and coverage gaps untracked.
+17. **Committed `.js` stubs alongside `.ts` source files cause silent module-resolution shadowing** — Never commit a hand-authored `.js` file with the same stem as a `.ts` source file (e.g., `types.js` next to `types.ts`); at Node.js runtime the `.js` wins and hides any runtime exports the `.ts` may later add; fix module-resolution issues with `resolve.alias` or `vite-tsconfig-paths` configuration instead.
+18. **Service functions that iterate blob containers must guard against non-existent containers** — Before calling `listBlobsFlat()` on a container that may not exist (e.g., infrastructure not yet provisioned), call `containerClient.exists()` and return a safe empty value; propagating an unhandled SDK 404 as a 500 is confusing and avoidable.
