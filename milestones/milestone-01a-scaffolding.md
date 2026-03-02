@@ -18,7 +18,7 @@
 
 - [x] Add GET `/api/health` route handler in `src/server/routes/health.ts` returning `res.json({ status: "ok" })`; create `src/server/routes/index.ts` that mounts the health router and exports the combined API router; import and use it in `src/server/index.ts`
 
-- [ ] Scaffold Vite + React SPA: `index.html` (root HTML, mounts `#root`), `src/client/main.tsx` (renders `<App />`), `src/client/App.tsx` (placeholder "AutoDev" heading), `vite.config.ts` (React plugin, output `dist/public`, `/api` proxy to `http://localhost:3000`)
+- [x] Scaffold Vite + React SPA: `index.html` (root HTML, mounts `#root`), `src/client/main.tsx` (renders `<App />`), `src/client/App.tsx` (placeholder "AutoDev" heading), `vite.config.ts` (React plugin, output `dist/public`, `/api` proxy to `http://localhost:3000`)
 
 - [ ] Configure Tailwind CSS: install `tailwindcss`, `postcss`, `autoprefixer`; create `tailwind.config.js` with content paths `["./index.html", "./src/client/**/*.{ts,tsx}"]`; create `postcss.config.js`; create `src/client/index.css` with `@tailwind base; @tailwind components; @tailwind utilities`; import `index.css` in `main.tsx`
 
