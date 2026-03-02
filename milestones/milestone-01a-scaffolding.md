@@ -12,7 +12,7 @@
 > - `src/shared/types.ts` — shared TypeScript types
 > - `vite.config.ts` — Vite build configuration with /api proxy
 
-- [ ] Initialize Node.js + TypeScript project: `package.json` with scripts (`dev`, `build`, `build:server`, `build:client`, `start`, `test`), dependencies (express, @types/express, typescript, tsx, vite, react, react-dom, @types/react, @types/react-dom, react-router-dom, lucide-react, sonner), and devDependencies (vitest, @vitest/ui, @testing-library/react); root `tsconfig.json` with `strict: true`, `module: NodeNext`, `moduleResolution: NodeNext`; `tsconfig.server.json` extending root, targeting `src/server`, outputting to `dist/server`; `tsconfig.client.json` extending root for Vite/DOM types
+- [x] Initialize Node.js + TypeScript project: `package.json` with scripts (`dev`, `build`, `build:server`, `build:client`, `start`, `test`), dependencies (express, @types/express, typescript, tsx, vite, react, react-dom, @types/react, @types/react-dom, react-router-dom, lucide-react, sonner), and devDependencies (vitest, @vitest/ui, @testing-library/react); root `tsconfig.json` with `strict: true`, `module: NodeNext`, `moduleResolution: NodeNext`; `tsconfig.server.json` extending root, targeting `src/server`, outputting to `dist/server`; `tsconfig.client.json` extending root for Vite/DOM types
 
 - [ ] Create Express server entry point `src/server/index.ts`: import express, serve `dist/public` as static files with `express.static`, register API router at `/api`, call `createCosmosContainers()` on startup (log error without crashing), listen on `process.env.PORT ?? 3000`, log `Server listening on port …`
 
