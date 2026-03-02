@@ -11,7 +11,7 @@
 
 - [x] Create `src/client/pages/SampleSpecsAdminPage.tsx` with a `loadSpecs` function that calls `fetchSampleSpecs`, `specs` / `loading` / `error` state, loading skeleton (5 `<Skeleton>` rows), empty state ("No sample specs uploaded yet. Click Upload to add your first spec."), and error state (Sonner toast + inline "Failed to load specs" paragraph + "Retry" Button)
 
-- [ ] Add desktop table to `SampleSpecsAdminPage` (`hidden md:block`): columns **Filename**, **Size** (via `formatFileSize`), **Last Modified** (via `formatDate`), **Actions**; one row per spec with `border-b hover:bg-accent` styling
+- [x] Add desktop table to `SampleSpecsAdminPage` (`hidden md:block`): columns **Filename**, **Size** (via `formatFileSize`), **Last Modified** (via `formatDate`), **Actions**; one row per spec with `border-b hover:bg-accent` styling
 
 - [ ] Add mobile card list to `SampleSpecsAdminPage` (`block md:hidden`): one card per spec with filename bold on top, size + last-modified on second line, action icon buttons (`Eye` and `Trash2`) in a row at the bottom; `min-h-[44px]` touch target on action buttons
 
