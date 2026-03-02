@@ -19,7 +19,7 @@
 ---
 
 - [x] Create `src/server/routes/sampleSpecs.ts` with a `GET /` handler that calls `listSampleSpecs()` and returns the array as JSON; 500 on error
-- [ ] Add `GET /:name` handler to `sampleSpecs.ts` — calls `getSampleSpecContent(req.params.name)`; returns 404 `{ error: "Spec not found" }` if null; otherwise returns `{ name: req.params.name, content }` as JSON
+- [x] Add `GET /:name` handler to `sampleSpecs.ts` — calls `getSampleSpecContent(req.params.name)`; returns 404 `{ error: "Spec not found" }` if null; otherwise returns `{ name: req.params.name, content }` as JSON
 - [ ] Add `POST /` handler to `sampleSpecs.ts` using `multer({ storage: multer.memoryStorage() }).single("file")` middleware — validates that `req.file` exists and the original filename ends with `.md` (400 otherwise); calls `uploadSampleSpec(req.file.originalname, req.file.buffer, req.file.mimetype || "text/markdown")`; returns 201 `{ name: req.file.originalname }`
 - [ ] Add `DELETE /:name` handler to `sampleSpecs.ts` — calls `deleteSampleSpec(req.params.name)` and returns 204 No Content; 500 on error
 - [ ] Mount `sampleSpecsRouter` at `/sample-specs` in `src/server/routes/index.ts` (import from `./sampleSpecs.js` and add `apiRouter.use("/sample-specs", sampleSpecsRouter)` before the 404 catch-all)
