@@ -20,4 +20,4 @@
 - [x] Create `src/server/lib/sampleSpecsService.ts` with `listSampleSpecs(): Promise<SampleSpec[]>` — calls `getBlobServiceClient().getContainerClient("sample-specs").listBlobsFlat()` and maps each `BlobItem` to `{ name: blob.name, size: blob.properties.contentLength ?? 0, lastModified: blob.properties.lastModified?.toISOString() ?? "" }`
 - [x] Add `getSampleSpecContent(name: string): Promise<string | null>` to `sampleSpecsService.ts` — gets `BlockBlobClient` for the named blob; returns `null` if the blob does not exist (catch 404 / `BlobNotFound`); otherwise downloads to buffer and returns `buffer.toString("utf-8")`
 - [x] Add `uploadSampleSpec(name: string, buffer: Buffer, contentType: string): Promise<void>` to `sampleSpecsService.ts` — calls `blockBlobClient.upload(buffer, buffer.length, { blobHTTPHeaders: { blobContentType: contentType } })`
-- [ ] Add `deleteSampleSpec(name: string): Promise<void>` to `sampleSpecsService.ts` — calls `blockBlobClient.deleteIfExists()`
+- [x] Add `deleteSampleSpec(name: string): Promise<void>` to `sampleSpecsService.ts` — calls `blockBlobClient.deleteIfExists()`
