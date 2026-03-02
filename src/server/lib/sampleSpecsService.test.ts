@@ -15,7 +15,7 @@ type MockBlob = {
 
 function makeMockBlockBlobClient(options: {
   downloadBuffer?: Buffer;
-  downloadError?: { code?: string; statusCode?: number };
+  downloadError?: { code?: string; statusCode?: number } | Error;
   uploadSpy?: ReturnType<typeof vi.fn>;
   deleteIfExistsSpy?: ReturnType<typeof vi.fn>;
 }) {
