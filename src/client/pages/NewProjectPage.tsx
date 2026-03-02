@@ -25,6 +25,66 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+function stripMd(filename: string): string {
+  return filename.replace(/\.md$/i, "");
+}
+
+function SpecSelector({
+  specs,
+  specsLoading,
+  specsError,
+  value,
+  onChange,
+  onRetry,
+}: {
+  specs: SampleSpec[];
+  specsLoading: boolean;
+  specsError: string | null;
+  value: string;
+  onChange: (val: string) => void;
+  onRetry: () => void;
+}) {
+  if (specsLoading) {
+    return (
+      <Select disabled>
+        <SelectTrigger id="specName">
+          <SelectValue placeholder="Loading specs…" />
+        </SelectTrigger>
+        <SelectContent />
+      </Select>
+    );
+  }
+  if (specsError) {
+    return (
+      <div className="space-y-2">
+        <p className="text-sm text-destructive">Failed to load specs: {specsError}</p>
+        <Button type="button" variant="outline" size="sm" onClick={onRetry}>Retry</Button>
+      </div>
+    );
+  }
+  if (specs.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        No specs available — upload specs in Admin first
+      </p>
+    );
+  }
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger id="specName">
+        <SelectValue placeholder="Select a spec…" />
+      </SelectTrigger>
+      <SelectContent>
+        {specs.map((s) => (
+          <SelectItem key={s.name} value={s.name}>
+            {stripMd(s.name)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 export function NewProjectPage() {
   const navigate = useNavigate();
   const [specs, setSpecs] = useState<SampleSpec[]>([]);
@@ -44,23 +104,17 @@ export function NewProjectPage() {
   });
 
   const specName = watch("specName");
-  const noSpecs = !specsLoading && (specsError !== null || specs.length === 0);
+  const specsEmpty = !specsLoading && specsError === null && specs.length === 0;
 
-  useEffect(() => {
+  function loadSpecs() {
+    setSpecsLoading(true);
+    setSpecsError(null);
     fetchSampleSpecs()
-      .then((data) => {
-        setSpecs(data);
-        setSpecsLoading(false);
-      })
-      .catch((err: Error) => {
-        setSpecsError(err.message);
-        setSpecsLoading(false);
-      });
-  }, []);
-
-  function stripMd(filename: string) {
-    return filename.replace(/\.md$/i, "");
+      .then((data) => { setSpecs(data); setSpecsLoading(false); })
+      .catch((err: Error) => { setSpecsError(err.message); setSpecsLoading(false); });
   }
+
+  useEffect(() => { loadSpecs(); }, []);
 
   async function onSubmit(values: FormValues) {
     setSubmitting(true);
@@ -79,53 +133,25 @@ export function NewProjectPage() {
 
       <div className="space-y-2">
         <Label htmlFor="name">Project Name</Label>
-        <Input
-          id="name"
-          autoFocus
-          {...register("name")}
-        />
-        {errors.name && (
-          <p className="text-sm text-destructive">{errors.name.message}</p>
-        )}
+        <Input id="name" autoFocus {...register("name")} />
+        {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="specName">Sample Spec</Label>
-        {specsLoading ? (
-          <Select disabled>
-            <SelectTrigger id="specName">
-              <SelectValue placeholder="Loading specs…" />
-            </SelectTrigger>
-            <SelectContent />
-          </Select>
-        ) : noSpecs ? (
-          <p className="text-sm text-muted-foreground">
-            No specs available — upload specs in Admin first
-          </p>
-        ) : (
-          <Select
-            value={specName}
-            onValueChange={(val) => setValue("specName", val, { shouldValidate: true })}
-          >
-            <SelectTrigger id="specName">
-              <SelectValue placeholder="Select a spec…" />
-            </SelectTrigger>
-            <SelectContent>
-              {specs.map((s) => (
-                <SelectItem key={s.name} value={s.name}>
-                  {stripMd(s.name)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-        {errors.specName && (
-          <p className="text-sm text-destructive">{errors.specName.message}</p>
-        )}
+        <SpecSelector
+          specs={specs}
+          specsLoading={specsLoading}
+          specsError={specsError}
+          value={specName}
+          onChange={(val) => setValue("specName", val, { shouldValidate: true })}
+          onRetry={loadSpecs}
+        />
+        {errors.specName && <p className="text-sm text-destructive">{errors.specName.message}</p>}
       </div>
 
       <div className="flex gap-3">
-        <Button type="submit" disabled={submitting || noSpecs}>
+        <Button type="submit" disabled={submitting || specsEmpty}>
           {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Create Project
         </Button>

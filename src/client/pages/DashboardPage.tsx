@@ -64,6 +64,24 @@ function MobileCardList({ projects, navigate }: { projects: Project[]; navigate:
   );
 }
 
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="space-y-3">
+      <p className="text-destructive">Failed to load projects</p>
+      <Button variant="outline" onClick={onRetry}>Retry</Button>
+    </div>
+  );
+}
+
+function EmptyState({ onNew }: { onNew: () => void }) {
+  return (
+    <div className="flex flex-col items-center gap-4 py-12 text-center">
+      <p className="text-muted-foreground">No projects yet</p>
+      <Button onClick={onNew}>Create your first project</Button>
+    </div>
+  );
+}
+
 export function DashboardPage() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[] | null>(null);
@@ -74,10 +92,7 @@ export function DashboardPage() {
     setLoading(true);
     setError(null);
     fetchProjects()
-      .then((data) => {
-        setProjects(data);
-        setLoading(false);
-      })
+      .then((data) => { setProjects(data); setLoading(false); })
       .catch((err: Error) => {
         setError(err.message);
         setLoading(false);
@@ -85,9 +100,7 @@ export function DashboardPage() {
       });
   }
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
   const sortedProjects = projects
     ? [...projects].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -101,36 +114,19 @@ export function DashboardPage() {
       </div>
 
       {loading && <ProjectSkeleton />}
-
-      {!loading && error && (
-        <div className="space-y-3">
-          <p className="text-destructive">Failed to load projects</p>
-          <Button variant="outline" onClick={load}>
-            Retry
-          </Button>
-        </div>
+      {!loading && error && <ErrorState onRetry={load} />}
+      {!loading && !error && sortedProjects && sortedProjects.length === 0 && (
+        <EmptyState onNew={() => navigate("/projects/new")} />
       )}
-
-      {!loading && !error && sortedProjects && (
-        <div className="space-y-2">
-          {sortedProjects.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 py-12 text-center">
-              <p className="text-muted-foreground">No projects yet</p>
-              <Button onClick={() => navigate("/projects/new")}>
-                Create your first project
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="hidden md:block">
-                <DesktopTable projects={sortedProjects} navigate={navigate} />
-              </div>
-              <div className="block md:hidden">
-                <MobileCardList projects={sortedProjects} navigate={navigate} />
-              </div>
-            </>
-          )}
-        </div>
+      {!loading && !error && sortedProjects && sortedProjects.length > 0 && (
+        <>
+          <div className="hidden md:block">
+            <DesktopTable projects={sortedProjects} navigate={navigate} />
+          </div>
+          <div className="block md:hidden">
+            <MobileCardList projects={sortedProjects} navigate={navigate} />
+          </div>
+        </>
       )}
     </div>
   );

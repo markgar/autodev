@@ -125,13 +125,16 @@ describe("NewProjectPage", () => {
     });
   });
 
-  it("disables Create Project button when specs fail to load", async () => {
+  it("shows error message and retry button when specs fail to load", async () => {
     (fetchSampleSpecs as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("Network error"));
     renderPage();
     await waitFor(() => {
-      const btn = screen.getByRole("button", { name: /Create Project/ }) as HTMLButtonElement;
-      expect(btn.disabled).toBe(true);
+      expect(screen.getByText(/Failed to load specs: Network error/)).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Retry/ })).toBeTruthy();
     });
+    // Submit button is NOT permanently disabled — user can fill the name and retry specs
+    const btn = screen.getByRole("button", { name: /Create Project/ }) as HTMLButtonElement;
+    expect(btn.disabled).toBe(false);
   });
 
   it("lists spec filenames without .md extension", async () => {
