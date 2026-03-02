@@ -1,6 +1,6 @@
 # Review Themes
 
-Last updated: Project Detail & Log Viewer
+Last updated: Sample Specs – Backend, Utilities & Test Fixes
 
 1. **tsconfig rootDir/include mismatch** — When `tsconfig.server.json` includes files outside `rootDir` (e.g., `src/shared`), set `rootDir` to the common ancestor (`src`), then update all path-dependent scripts (e.g., `start`) to match the new output layout (`dist/server/server/index.js`).
 2. **Start script not updated after tsconfig changes** — Any change to `rootDir` or `outDir` in a tsconfig must be followed immediately by updating every `package.json` script that references compiled output paths; the build succeeding is not sufficient verification.
@@ -30,3 +30,4 @@ Last updated: Project Detail & Log Viewer
 26. **Error state and empty state must not be collapsed into the same boolean/message** — When an async fetch can fail OR return empty results, always render each case separately; collapsing both into a single `noItems` flag causes a network-failure to display "No items — do X in Admin" which is factually wrong, silently discards the actual error message, and leaves the user with no retry path.
 27. **Polling intervals must be gated on the prerequisite resource existing** — When a page polls a sub-resource (e.g., logs for a project), the interval must not start — or must be cleared — if the parent resource fails to load (404, error); unconditional polling on a non-existent resource generates infinite API calls and SDK noise.
 28. **API client helpers must preserve the HTTP status code on thrown errors** — Throwing `new Error(body.error)` discards the HTTP status, forcing callers to string-match error messages to detect specific codes (e.g., `err.message === "Project not found"` to identify a 404); attach `status: number` to thrown errors so callers can switch on the numeric code instead.
+29. **Every new exported function needs tests — not just `*Service.ts` files** — Theme 16 covers service modules, but the same rule applies to any new exported utility (e.g., `formatFileSize` in `utils.ts`) or API client helper (e.g., `fetchSampleSpecContent`, `uploadSampleSpec`, `deleteSampleSpec`); if a function is exported and called by production code, its describe block must ship in the same milestone commit, not deferred.
