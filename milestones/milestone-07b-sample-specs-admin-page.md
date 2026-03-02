@@ -21,4 +21,4 @@
 
 - [x] Add View modal to `SampleSpecsAdminPage` using shadcn/ui `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogFooter`; opening the eye icon calls `fetchSampleSpecContent(name)` and stores content in state; modal body is a `<pre className="font-mono text-sm overflow-y-auto max-h-[70vh] whitespace-pre-wrap break-all">` block; footer has a "Download" button that creates a `Blob` from the content, generates an object URL, and triggers a `<a download={name}>` click, and a "Close" button; `DialogContent` uses `className="sm:max-w-2xl w-full"` for desktop/mobile sizing
 
-- [ ] Register `SampleSpecsAdminPage` in `src/client/App.tsx`: replace the `<div>Sample Specs</div>` placeholder at `/admin/sample-specs` with `<SampleSpecsAdminPage />`
+- [x] Register `SampleSpecsAdminPage` in `src/client/App.tsx`: replace the `<div>Sample Specs</div>` placeholder at `/admin/sample-specs` with `<SampleSpecsAdminPage />`
