@@ -93,9 +93,12 @@ export function DashboardPage() {
       {!loading && !error && projects && (
         <div className="space-y-2">
           {projects.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              No projects yet. Create one to get started.
-            </p>
+            <div className="flex flex-col items-center gap-4 py-12 text-center">
+              <p className="text-muted-foreground">No projects yet</p>
+              <Button onClick={() => navigate("/projects/new")}>
+                Create your first project
+              </Button>
+            </div>
           ) : (
             projects.map((p) => <ProjectRow key={p.id} project={p} />)
           )}
