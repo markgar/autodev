@@ -6,11 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 const fileSizeFormatter = new Intl.NumberFormat("en");
+const fileSizeDecimalFormatter = new Intl.NumberFormat("en", { maximumFractionDigits: 1 });
 
 export function formatFileSize(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes < 0) return "—";
   if (bytes < 1024) return `${fileSizeFormatter.format(bytes)} B`;
   const kb = bytes / 1024;
-  if (kb < 1024) return `${(kb).toFixed(1).replace(/\.0$/, "")} KB`;
+  if (kb < 1024) return `${fileSizeDecimalFormatter.format(kb)} KB`;
   const mb = kb / 1024;
-  return `${(mb).toFixed(1).replace(/\.0$/, "")} MB`;
+  return `${fileSizeDecimalFormatter.format(mb)} MB`;
 }
