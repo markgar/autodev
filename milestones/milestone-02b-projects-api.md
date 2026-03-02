@@ -15,7 +15,7 @@
 > - `src/server/lib/blobClient.ts` — how to get the `BlobServiceClient` singleton
 > - `src/shared/types.ts` — `Project` interface (all fields required by the API response)
 
-- [ ] Create `src/server/lib/projectsService.ts` with three exported functions: `createProject(name: string, specName: string): Promise<Project>` — builds a document with `id: crypto.randomUUID()`, `organizationId: "default"`, `type: "project"`, `name`, `specName`, `createdAt: new Date().toISOString()`, `latestRunStatus: null`, `runCount: 0`; writes it via `client.database("autodev").container("items").items.create(doc)`; returns the created doc cast as `Project`
+- [x] Create `src/server/lib/projectsService.ts` with three exported functions: `createProject(name: string, specName: string): Promise<Project>` — builds a document with `id: crypto.randomUUID()`, `organizationId: "default"`, `type: "project"`, `name`, `specName`, `createdAt: new Date().toISOString()`, `latestRunStatus: null`, `runCount: 0`; writes it via `client.database("autodev").container("items").items.create(doc)`; returns the created doc cast as `Project`
 
 - [ ] Add `listProjects` and `getProject` to `src/server/lib/projectsService.ts`: `listProjects(): Promise<Project[]>` — queries `SELECT * FROM c WHERE c.organizationId = "default" AND c.type = "project" ORDER BY c.createdAt DESC` via `container.items.query(...).fetchAll()`; `getProject(id: string): Promise<Project | null>` — point-reads via `container.item(id, "default").read<Project>()`; returns `resource ?? null`
 
