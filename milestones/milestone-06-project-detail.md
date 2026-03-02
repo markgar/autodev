@@ -14,9 +14,9 @@
 > - `src/server/lib/logsService.ts` — logs service returning `string[]` (already implemented — no server changes needed)
 > - `src/shared/types.ts` — `Project` type shared between client and server
 
-- [ ] Add `fetchProject(id: string): Promise<Project>` helper to `src/client/lib/api.ts` that calls `GET /api/projects/:id` and throws on non-ok response using the same `body.error ?? \`HTTP ${res.status}\`` pattern as existing helpers
+- [x] Add `fetchProject(id: string): Promise<Project>` helper to `src/client/lib/api.ts` that calls `GET /api/projects/:id` and throws on non-ok response using the same `body.error ?? \`HTTP ${res.status}\`` pattern as existing helpers
 
-- [ ] Add `fetchProjectLogs(id: string): Promise<string[]>` helper to `src/client/lib/api.ts` that calls `GET /api/projects/:id/logs`, extracts the `lines` array from the `{ lines: string[] }` response body, and throws on non-ok response
+- [x] Add `fetchProjectLogs(id: string): Promise<string[]>` helper to `src/client/lib/api.ts` that calls `GET /api/projects/:id/logs`, extracts the `lines` array from the `{ lines: string[] }` response body, and throws on non-ok response
 
 - [ ] Create `src/client/pages/ProjectDetailPage.tsx` with the project header: use `useParams<{ id: string }>()` to get the project ID; fetch project with `fetchProject` on mount; show a `<Loader2 className="animate-spin" />` spinner during initial load; show an inline error message with a Retry button if the fetch fails; show "Project not found" if the API returns 404; on success render: a `<Link to="/">← Back to Dashboard</Link>` above the heading, the project name as `<h1 className="text-2xl font-bold">`, and the created date below in `<p className="text-sm text-muted-foreground">` using `formatDate`
 
