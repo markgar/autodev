@@ -117,6 +117,50 @@ describe("listSampleSpecs", () => {
     await listSampleSpecs();
     expect(getContainerClient).toHaveBeenCalledWith("sample-specs");
   });
+
+  it("returns empty array when listBlobsFlat throws with statusCode 404", async () => {
+    const containerClient = {
+      exists: vi.fn().mockResolvedValue(true),
+      listBlobsFlat: vi.fn(async function* () {
+        throw Object.assign(new Error("ContainerNotFound"), { statusCode: 404 });
+      }),
+      getBlockBlobClient: vi.fn(),
+    };
+    (getBlobServiceClient as ReturnType<typeof vi.fn>).mockReturnValue({
+      getContainerClient: vi.fn().mockReturnValue(containerClient),
+    });
+    const result = await listSampleSpecs();
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array when listBlobsFlat throws with code ContainerNotFound", async () => {
+    const containerClient = {
+      exists: vi.fn().mockResolvedValue(true),
+      listBlobsFlat: vi.fn(async function* () {
+        throw Object.assign(new Error("ContainerNotFound"), { code: "ContainerNotFound" });
+      }),
+      getBlockBlobClient: vi.fn(),
+    };
+    (getBlobServiceClient as ReturnType<typeof vi.fn>).mockReturnValue({
+      getContainerClient: vi.fn().mockReturnValue(containerClient),
+    });
+    const result = await listSampleSpecs();
+    expect(result).toEqual([]);
+  });
+
+  it("re-throws unexpected errors from listBlobsFlat iteration", async () => {
+    const containerClient = {
+      exists: vi.fn().mockResolvedValue(true),
+      listBlobsFlat: vi.fn(async function* () {
+        throw Object.assign(new Error("Network timeout"), { statusCode: 503 });
+      }),
+      getBlockBlobClient: vi.fn(),
+    };
+    (getBlobServiceClient as ReturnType<typeof vi.fn>).mockReturnValue({
+      getContainerClient: vi.fn().mockReturnValue(containerClient),
+    });
+    await expect(listSampleSpecs()).rejects.toThrow("Network timeout");
+  });
 });
 
 describe("getSampleSpecContent", () => {

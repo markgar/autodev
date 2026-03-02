@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchProjects, formatDate } from "./api.js";
+import { fetchProjects, fetchSampleSpecs, createProject, formatDate } from "./api.js";
 
 describe("formatDate", () => {
   beforeEach(() => {
@@ -105,5 +105,121 @@ describe("fetchProjects", () => {
 
     const result = await fetchProjects();
     expect(result).toEqual([]);
+  });
+});
+
+describe("fetchSampleSpecs", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("calls GET /api/sample-specs endpoint", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue([]),
+    });
+
+    await fetchSampleSpecs();
+    expect(fetch).toHaveBeenCalledWith("/api/sample-specs");
+  });
+
+  it("returns parsed SampleSpec array on successful response", async () => {
+    const specs = [{ name: "minimal.md", size: 512, lastModified: "2024-06-01T00:00:00.000Z" }];
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue(specs),
+    });
+
+    const result = await fetchSampleSpecs();
+    expect(result).toEqual(specs);
+  });
+
+  it("throws an error with server message on non-OK response", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: vi.fn().mockResolvedValue({ error: "Blob storage unavailable" }),
+    });
+
+    await expect(fetchSampleSpecs()).rejects.toThrow("Blob storage unavailable");
+  });
+
+  it("returns empty array when no specs exist", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue([]),
+    });
+
+    const result = await fetchSampleSpecs();
+    expect(result).toEqual([]);
+  });
+});
+
+describe("createProject", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("calls POST /api/projects with JSON body", async () => {
+    const project = {
+      id: "proj-1", organizationId: "default", type: "project" as const,
+      name: "My App", specName: "minimal.md", createdAt: "2024-06-01T00:00:00.000Z",
+      latestRunStatus: null, runCount: 0,
+    };
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue(project),
+    });
+
+    await createProject({ name: "My App", specName: "minimal.md" });
+
+    expect(fetch).toHaveBeenCalledWith("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "My App", specName: "minimal.md" }),
+    });
+  });
+
+  it("returns parsed Project on successful creation", async () => {
+    const project = {
+      id: "proj-2", organizationId: "default", type: "project" as const,
+      name: "New App", specName: "full.md", createdAt: "2024-06-15T00:00:00.000Z",
+      latestRunStatus: null, runCount: 0,
+    };
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue(project),
+    });
+
+    const result = await createProject({ name: "New App", specName: "full.md" });
+    expect(result).toEqual(project);
+  });
+
+  it("throws an error with server message on non-OK response", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 422,
+      json: vi.fn().mockResolvedValue({ error: "Project name already exists" }),
+    });
+
+    await expect(createProject({ name: "Dupe App", specName: "minimal.md" })).rejects.toThrow("Project name already exists");
+  });
+
+  it("throws Unknown error fallback when error body is not JSON", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: vi.fn().mockRejectedValue(new SyntaxError("not json")),
+    });
+
+    await expect(createProject({ name: "App", specName: "spec.md" })).rejects.toThrow("Unknown error");
   });
 });
