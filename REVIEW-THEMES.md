@@ -1,6 +1,6 @@
 # Review Themes
 
-Last updated: New Project Page — Foundation
+Last updated: New Project Page — UI
 
 1. **tsconfig rootDir/include mismatch** — When `tsconfig.server.json` includes files outside `rootDir` (e.g., `src/shared`), set `rootDir` to the common ancestor (`src`), then update all path-dependent scripts (e.g., `start`) to match the new output layout (`dist/server/server/index.js`).
 2. **Start script not updated after tsconfig changes** — Any change to `rootDir` or `outDir` in a tsconfig must be followed immediately by updating every `package.json` script that references compiled output paths; the build succeeding is not sufficient verification.
@@ -27,3 +27,4 @@ Last updated: New Project Page — Foundation
 23. **Responsive dual-render components make `getByText` queries ambiguous** — When a page renders both a desktop view and a mobile view simultaneously in the DOM (using CSS-only visibility), Testing Library's `getByText()` / `getByRole()` finds elements in both and throws "Found multiple elements"; always use `getAllByText()` with a count assertion, or use `within()` to scope the query to the visible container.
 24. **`MemoryRouter` does not update `window.location` — never assert navigation via `location.pathname`** — `MemoryRouter` maintains its own in-memory history and never writes to `window.location`; assertions like `expect(container.ownerDocument.location.pathname).toBe("/target")` always read the initial JSDOM URL and will always fail or always pass trivially; test navigation by rendering the destination route and asserting its content renders.
 25. **Startup validation guards must be gated on production mode** — Any `existsSync` or asset-presence check that calls `process.exit(1)` at server startup must be conditioned on `process.env.NODE_ENV === "production"`; applying it unconditionally crashes the dev server (`tsx watch`) in fresh checkouts where `dist/public` has not yet been built by Vite, breaking the documented `npm run dev` workflow.
+26. **Error state and empty state must not be collapsed into the same boolean/message** — When an async fetch can fail OR return empty results, always render each case separately; collapsing both into a single `noItems` flag causes a network-failure to display "No items — do X in Admin" which is factually wrong, silently discards the actual error message, and leaves the user with no retry path.
