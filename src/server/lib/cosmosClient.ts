@@ -8,15 +8,11 @@ const credential = new DefaultAzureCredential();
 const client = new CosmosClient({ endpoint: COSMOS_URL, aadCredentials: credential });
 
 async function createCosmosContainers(): Promise<void> {
-  try {
-    const { database } = await client.databases.createIfNotExists({ id: "autodev" });
-    await database.containers.createIfNotExists({
-      id: "items",
-      partitionKey: { paths: ["/organizationId"] },
-    });
-  } catch (err) {
-    throw err;
-  }
+  const { database } = await client.databases.createIfNotExists({ id: "autodev" });
+  await database.containers.createIfNotExists({
+    id: "items",
+    partitionKey: { paths: ["/organizationId"] },
+  });
 }
 
 export { client, createCosmosContainers };
