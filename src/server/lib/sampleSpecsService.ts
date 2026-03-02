@@ -9,6 +9,10 @@ function getContainerClient() {
 
 async function listSampleSpecs(): Promise<SampleSpec[]> {
   const containerClient = getContainerClient();
+  const exists = await containerClient.exists();
+  if (!exists) {
+    return [];
+  }
   const specs: SampleSpec[] = [];
   for await (const blob of containerClient.listBlobsFlat()) {
     specs.push({
@@ -20,10 +24,12 @@ async function listSampleSpecs(): Promise<SampleSpec[]> {
   return specs;
 }
 
+const MAX_SPEC_BYTES = 1 * 1024 * 1024; // 1 MB — specs are markdown, should be tiny
+
 async function getSampleSpecContent(name: string): Promise<string | null> {
   const blockBlobClient = getContainerClient().getBlockBlobClient(name);
   try {
-    const buffer = await blockBlobClient.downloadToBuffer();
+    const buffer = await blockBlobClient.downloadToBuffer(0, MAX_SPEC_BYTES);
     return buffer.toString("utf-8");
   } catch (err: unknown) {
     const code = (err as { code?: string; statusCode?: number })?.code ?? (err as { code?: string; statusCode?: number })?.statusCode;

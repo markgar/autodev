@@ -28,8 +28,9 @@ function makeMockBlockBlobClient(options: {
   };
 }
 
-function makeMockContainerClient(blobs: MockBlob[] = [], blockBlobClientFactory?: (name: string) => ReturnType<typeof makeMockBlockBlobClient>) {
+function makeMockContainerClient(blobs: MockBlob[] = [], blockBlobClientFactory?: (name: string) => ReturnType<typeof makeMockBlockBlobClient>, exists = true) {
   return {
+    exists: vi.fn().mockResolvedValue(exists),
     listBlobsFlat: vi.fn(async function* () {
       for (const blob of blobs) {
         yield {
@@ -61,6 +62,12 @@ describe("listSampleSpecs", () => {
 
   it("returns empty array when container has no blobs", async () => {
     setupMockBlobService(makeMockContainerClient([]));
+    const result = await listSampleSpecs();
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array when container does not exist", async () => {
+    setupMockBlobService(makeMockContainerClient([], undefined, false));
     const result = await listSampleSpecs();
     expect(result).toEqual([]);
   });
@@ -161,6 +168,15 @@ describe("getSampleSpecContent", () => {
 
     await getSampleSpecContent("target-spec.md");
     expect(getBlockBlobClient).toHaveBeenCalledWith("target-spec.md");
+  });
+
+  it("passes a 1 MB size cap to downloadToBuffer", async () => {
+    const blockBlobClient = makeMockBlockBlobClient({ downloadBuffer: Buffer.from("content") });
+    const containerClient = makeMockContainerClient([], () => blockBlobClient);
+    setupMockBlobService(containerClient);
+
+    await getSampleSpecContent("spec.md");
+    expect(blockBlobClient.downloadToBuffer).toHaveBeenCalledWith(0, 1 * 1024 * 1024);
   });
 });
 
