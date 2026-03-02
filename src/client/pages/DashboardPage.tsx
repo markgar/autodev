@@ -2,47 +2,68 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { fetchProjects, formatDate } from "@/lib/api";
 import type { Project } from "../../shared/types";
 
 function ProjectSkeleton() {
   return (
-    <div className="animate-pulse space-y-3">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="h-16 bg-muted rounded-md" />
+    <div className="space-y-3">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Skeleton key={i} className="h-16 w-full" />
       ))}
     </div>
   );
 }
 
-function ProjectRow({ project }: { project: Project }) {
-  const navigate = useNavigate();
+function DesktopTable({ projects, navigate }: { projects: Project[]; navigate: (path: string) => void }) {
+  const sorted = [...projects].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
   return (
-    <button
-      type="button"
-      onClick={() => navigate(`/projects/${project.id}`)}
-      className="w-full text-left flex items-center justify-between px-4 py-3 rounded-md border hover:bg-accent hover:text-accent-foreground transition-colors"
-    >
-      <div>
-        <p className="font-medium">{project.name}</p>
-        <p className="text-sm text-muted-foreground">
-          {project.specName} · {formatDate(project.createdAt)}
-        </p>
-      </div>
-      <span
-        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-          project.latestRunStatus === "succeeded"
-            ? "bg-green-100 text-green-800"
-            : project.latestRunStatus === "failed"
-              ? "bg-red-100 text-red-800"
-              : project.latestRunStatus === "running"
-                ? "bg-blue-100 text-blue-800"
-                : "bg-muted text-muted-foreground"
-        }`}
-      >
-        {project.latestRunStatus ?? "no runs"}
-      </span>
-    </button>
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b text-muted-foreground">
+          <th className="text-left py-2 pr-4 font-medium">Name</th>
+          <th className="text-left py-2 font-medium">Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((p) => (
+          <tr
+            key={p.id}
+            onClick={() => navigate(`/projects/${p.id}`)}
+            className="border-b cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            <td className="py-3 pr-4 font-medium">{p.name}</td>
+            <td className="py-3 text-muted-foreground">{formatDate(p.createdAt)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function MobileCardList({ projects, navigate }: { projects: Project[]; navigate: (path: string) => void }) {
+  const sorted = [...projects].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  return (
+    <div className="space-y-2">
+      {sorted.map((p) => (
+        <div
+          key={p.id}
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate(`/projects/${p.id}`)}
+          onKeyDown={(e) => e.key === "Enter" && navigate(`/projects/${p.id}`)}
+          className="min-h-[44px] flex flex-col justify-center px-4 py-3 rounded-md border cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+        >
+          <p className="font-bold">{p.name}</p>
+          <p className="text-sm text-muted-foreground">{formatDate(p.createdAt)}</p>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -82,7 +103,7 @@ export function DashboardPage() {
 
       {!loading && error && (
         <div className="space-y-3">
-          <p className="text-destructive">{error}</p>
+          <p className="text-destructive">Failed to load projects</p>
           <Button variant="outline" onClick={load}>
             Retry
           </Button>
@@ -92,11 +113,21 @@ export function DashboardPage() {
       {!loading && !error && projects && (
         <div className="space-y-2">
           {projects.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              No projects yet. Create one to get started.
-            </p>
+            <div className="flex flex-col items-center gap-4 py-12 text-center">
+              <p className="text-muted-foreground">No projects yet</p>
+              <Button onClick={() => navigate("/projects/new")}>
+                Create your first project
+              </Button>
+            </div>
           ) : (
-            projects.map((p) => <ProjectRow key={p.id} project={p} />)
+            <>
+              <div className="hidden md:block">
+                <DesktopTable projects={projects} navigate={navigate} />
+              </div>
+              <div className="block md:hidden">
+                <MobileCardList projects={projects} navigate={navigate} />
+              </div>
+            </>
           )}
         </div>
       )}
