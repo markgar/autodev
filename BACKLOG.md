@@ -1,0 +1,10 @@
+# AutoDev — Backlog
+
+1. [ ] Scaffolding — project structure, Express health endpoint, Vite+React SPA, shadcn/ui+Tailwind, Azure SDK packages, Cosmos+Blob client init on startup, shared types, vitest test framework configured with placeholder tests <!-- depends: none -->
+2. [ ] Projects API — Express routes for `/api/projects` (POST create, GET list, GET :id, GET :id/logs); Cosmos DB reads/writes with organizationId filter; blob container creation on project create <!-- depends: 1 -->
+3. [ ] Sample Specs API — Express routes for `/api/sample-specs` (GET list, GET :name, POST upload, DELETE :name); Azure Blob Storage `sample-specs` container integration <!-- depends: 1 -->
+4. [ ] App Shell — React Router setup, sidebar layout (shadcn/ui Sidebar components), responsive behavior (desktop persistent / mobile slide-over hamburger), "AutoDev" logo, Projects+Admin nav sections with Lucide icons and active highlight <!-- depends: 1 -->
+5. [ ] Dashboard — `/` projects list page; table on desktop / stacked cards on mobile; loading skeleton, empty state, error state with retry; "New Project" button navigating to `/projects/new`; rows link to `/projects/:id` <!-- depends: 2, 4 -->
+6. [ ] New Project — `/projects/new` form page; name field + sample spec Select picker (loads from GET /api/sample-specs); React Hook Form + Zod validation; submit calls POST /api/projects; success navigates to detail; loading/error/empty spec states <!-- depends: 2, 3, 4 -->
+7. [ ] Project Detail & Log Viewer — `/projects/:id` page; project header with back link; terminal-style log viewer polling GET :id/logs every 5–10s; auto-scroll pauses on manual scroll-up; Pause/Resume toggle with pulsing indicator; loading/empty/error states <!-- depends: 2, 4 -->
+8. [ ] Sample Specs Admin — `/admin/sample-specs` page; table with Filename/Size/Last Modified/Actions columns; upload via file picker (POST); delete with AlertDialog confirmation (DELETE); view modal with markdown preview and download button; responsive card layout on mobile; loading/empty/error states <!-- depends: 3, 4 -->
