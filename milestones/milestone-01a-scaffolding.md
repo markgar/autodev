@@ -26,7 +26,7 @@
 
 - [x] Install Azure SDK packages: `@azure/storage-blob`, `@azure/cosmos`, `@azure/identity` (production dependencies in `package.json`)
 
-- [ ] Create Cosmos DB client module `src/server/lib/cosmosClient.ts`: derive account URL as `https://cosmos-autodev-${STAMP_ID}.documents.azure.com:443/` where `STAMP_ID = process.env.STAMP_ID ?? "qqq"`; initialize `CosmosClient` with `DefaultAzureCredential`; export `createCosmosContainers()` that calls `client.databases.createIfNotExists({ id: "autodev" })` then `database.containers.createIfNotExists({ id: "items", partitionKey: { paths: ["/organizationId"] } })`; wrap in try/catch and re-throw
+- [x] Create Cosmos DB client module `src/server/lib/cosmosClient.ts`: derive account URL as `https://cosmos-autodev-${STAMP_ID}.documents.azure.com:443/` where `STAMP_ID = process.env.STAMP_ID ?? "qqq"`; initialize `CosmosClient` with `DefaultAzureCredential`; export `createCosmosContainers()` that calls `client.databases.createIfNotExists({ id: "autodev" })` then `database.containers.createIfNotExists({ id: "items", partitionKey: { paths: ["/organizationId"] } })`; wrap in try/catch and re-throw
 
 - [ ] Create Blob Storage client module `src/server/lib/blobClient.ts`: derive account URL as `https://stautodev${STAMP_ID}.blob.core.windows.net`; initialize `BlobServiceClient` with `DefaultAzureCredential`; export `getBlobServiceClient()` returning the singleton client
 
