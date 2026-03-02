@@ -47,7 +47,33 @@ function ProjectRow({ project }: { project: Project }) {
   );
 }
 
-export function DashboardPage() {
+function DesktopTable({ projects, navigate }: { projects: Project[]; navigate: (path: string) => void }) {
+  const sorted = [...projects].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b text-muted-foreground">
+          <th className="text-left py-2 pr-4 font-medium">Name</th>
+          <th className="text-left py-2 font-medium">Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((p) => (
+          <tr
+            key={p.id}
+            onClick={() => navigate(`/projects/${p.id}`)}
+            className="border-b cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            <td className="py-3 pr-4 font-medium">{p.name}</td>
+            <td className="py-3 text-muted-foreground">{formatDate(p.createdAt)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -100,7 +126,9 @@ export function DashboardPage() {
               </Button>
             </div>
           ) : (
-            projects.map((p) => <ProjectRow key={p.id} project={p} />)
+            <div className="hidden md:block">
+              <DesktopTable projects={projects} navigate={navigate} />
+            </div>
           )}
         </div>
       )}
