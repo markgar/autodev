@@ -25,4 +25,4 @@
 
 - [x] Add GET `/:id` and GET `/:id/logs` handlers to `src/server/routes/projects.ts`: GET `/:id` — call `getProject(req.params.id)`, return 404 + `{ error: "Project not found" }` if null, otherwise return 200 + project JSON; GET `/:id/logs` — call `getProjectLogs(req.params.id)`, return 200 + `{ lines }`; wrap both in try/catch returning 500 + `{ error: String(err) }` on failure
 
-- [ ] Mount `projectsRouter` in `src/server/routes/index.ts`: import `projectsRouter` from `./projects.js`; add `apiRouter.use("/projects", projectsRouter)` after the health router mount
+- [x] Mount `projectsRouter` in `src/server/routes/index.ts`: import `projectsRouter` from `./projects.js`; add `apiRouter.use("/projects", projectsRouter)` after the health router mount
