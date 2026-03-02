@@ -9,7 +9,6 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -34,7 +33,6 @@ function NavItem({
             isActive ? "bg-accent text-accent-foreground font-medium" : ""
           }`
         }
-        aria-current={undefined}
       >
         <Icon className="w-4 h-4" />
         {label}
@@ -90,10 +88,13 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           <div className="w-64 flex flex-col bg-background border-r shadow-lg">
             <SidebarNav />
           </div>
-          <div
-            className="flex-1 bg-black/40"
+          <button
+            type="button"
+            className="flex-1 bg-black/40 cursor-default border-0 p-0"
             onClick={() => setOpen(false)}
+            onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
             aria-label="Close sidebar"
+            tabIndex={-1}
           />
         </div>
       )}
