@@ -1,6 +1,6 @@
 # Review Themes
 
-Last updated: Infrastructure & Health Fixes
+Last updated: Projects API
 
 1. **tsconfig rootDir/include mismatch** — When `tsconfig.server.json` includes files outside `rootDir` (e.g., `src/shared`), set `rootDir` to the common ancestor (`src`), then update all path-dependent scripts (e.g., `start`) to match the new output layout (`dist/server/server/index.js`).
 2. **Start script not updated after tsconfig changes** — Any change to `rootDir` or `outDir` in a tsconfig must be followed immediately by updating every `package.json` script that references compiled output paths; the build succeeding is not sufficient verification.
@@ -14,3 +14,6 @@ Last updated: Infrastructure & Health Fixes
 10. **Interactive-only elements must be keyboard-accessible** — Any `<div>` or `<span>` with an `onClick` handler used for UI control (e.g., modal backdrop close) must also have `role`, `tabIndex`, and `onKeyDown`; omitting these makes the control invisible to keyboard and assistive-technology users.
 11. **Test mock res must match all handler code paths** — When a handler has an error branch that calls `res.status(code).json(...)`, the mock `res` object in every test for that handler must include a `status()` method that returns `res`; omitting it causes `TypeError` in CI rather than a clean assertion failure.
 12. **Handler tests must mock external I/O** — Unit tests for route handlers that call external services (Cosmos, Blob, DB) must use `vi.mock` / `jest.mock` for every SDK module imported by the handler; running against live services makes tests non-deterministic, environment-dependent, and breaks CI pipelines.
+13. **Cosmos SDK `resource` is typed `T | undefined` — always null-check after create/read** — `items.create()` and `.read()` return `resource` as `T | undefined`; never use `as T` to silence the type; guard with `if (!resource) throw new Error(...)` so a missing body produces a clear error rather than `undefined` masquerading as the entity downstream.
+14. **Multi-step handler writes are not atomic — plan for partial failure** — When a handler chains two writes to separate systems (e.g., Cosmos then Blob Storage), a failure on the second leaves the first committed; always include a best-effort rollback or cleanup in the `catch` block to avoid silent orphaned records accumulating in the database.
+15. **`downloadToBuffer()` without size bounds is an OOM risk** — Azure Blob SDK's `downloadToBuffer()` with no arguments loads the entire blob into a single `Buffer`; always pass an explicit maximum byte count (e.g., `downloadToBuffer(0, MAX_BYTES)`) or check `contentLength` before downloading to protect the server under large or adversarial blobs.
