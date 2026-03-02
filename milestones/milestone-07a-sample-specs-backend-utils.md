@@ -19,4 +19,4 @@
 
 - [x] Fix `src/client/pages/DashboardPage.test.tsx` navigation tests: replace `await waitFor(() => screen.getByRole('button', { name: 'New Project' })); fireEvent.click(screen.getByRole('button', ...))` with `const btn = await screen.findByRole('button', { name: 'New Project' }); fireEvent.click(btn)` (issue #56)
 
-- [ ] Fix `src/client/pages/DashboardPage.test.tsx` sorting test: replace the `getAllByText(/App/)` selector with `screen.getAllByRole('cell').filter(...)` or look up rows via `getAllByRole('row')` slicing the header row, then assert `.textContent` of the name cell — ensuring the selector is scoped to the table body and cannot match unrelated elements (issue #55)
+- [x] Fix `src/client/pages/DashboardPage.test.tsx` sorting test: replace the `getAllByText(/App/)` selector with `screen.getAllByRole('cell').filter(...)` or look up rows via `getAllByRole('row')` slicing the header row, then assert `.textContent` of the name cell — ensuring the selector is scoped to the table body and cannot match unrelated elements (issue #55)
