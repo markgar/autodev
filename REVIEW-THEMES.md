@@ -1,6 +1,6 @@
 # Review Themes
 
-Last updated: Dashboard — API Layer & Page Scaffold
+Last updated: Dashboard — States & Responsive Layout
 
 1. **tsconfig rootDir/include mismatch** — When `tsconfig.server.json` includes files outside `rootDir` (e.g., `src/shared`), set `rootDir` to the common ancestor (`src`), then update all path-dependent scripts (e.g., `start`) to match the new output layout (`dist/server/server/index.js`).
 2. **Start script not updated after tsconfig changes** — Any change to `rootDir` or `outDir` in a tsconfig must be followed immediately by updating every `package.json` script that references compiled output paths; the build succeeding is not sufficient verification.
@@ -24,3 +24,5 @@ Last updated: Dashboard — API Layer & Page Scaffold
 20. **Time/numeric range helpers must guard against negative (future) inputs** — Functions that compute relative time from a diff (e.g., `Date.now() - timestamp`) must explicitly handle negative diffs before entering range comparisons; a negative value passes every `< N` check and selects the wrong unit, silently showing "in 86,400 seconds" instead of "in 1 day".
 21. **`Intl.*` locale objects must be module-level constants, not per-call allocations** — `Intl.RelativeTimeFormat`, `Intl.NumberFormat`, `Intl.DateTimeFormat` etc. are expensive to construct; declare them once at module level rather than inside the function body that uses them.
 22. **Test helper functions that search arrays must null-guard with a descriptive error** — When a helper like `getRouteHandler` uses `.find()` and then dereferences the result, it must guard for `undefined` with an explicit `throw new Error(...)` message identifying the missing route/key; an unchecked dereference surfaces as a misleading `TypeError` that points at the helper, not the failing test.
+23. **Responsive dual-render components make `getByText` queries ambiguous** — When a page renders both a desktop view and a mobile view simultaneously in the DOM (using CSS-only visibility), Testing Library's `getByText()` / `getByRole()` finds elements in both and throws "Found multiple elements"; always use `getAllByText()` with a count assertion, or use `within()` to scope the query to the visible container.
+24. **`MemoryRouter` does not update `window.location` — never assert navigation via `location.pathname`** — `MemoryRouter` maintains its own in-memory history and never writes to `window.location`; assertions like `expect(container.ownerDocument.location.pathname).toBe("/target")` always read the initial JSDOM URL and will always fail or always pass trivially; test navigation by rendering the destination route and asserting its content renders.
