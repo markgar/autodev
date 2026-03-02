@@ -1,6 +1,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchProjects, fetchSampleSpecs, createProject, formatDate } from "./api.js";
+import { fetchProjects, fetchSampleSpecs, fetchProject, fetchProjectLogs, createProject, formatDate } from "./api.js";
 
+const sampleProject = {
+  id: "proj-1",
+  organizationId: "default",
+  type: "project" as const,
+  name: "Test App",
+  specName: "minimal.md",
+  createdAt: "2024-01-01T00:00:00.000Z",
+  latestRunStatus: null,
+  runCount: 0,
+};
 describe("formatDate", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -221,5 +231,125 @@ describe("createProject", () => {
     });
 
     await expect(createProject({ name: "App", specName: "spec.md" })).rejects.toThrow("HTTP 503");
+  });
+});
+
+describe("fetchProject", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("calls GET /api/projects/:id endpoint", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ ...sampleProject }),
+    });
+
+    await fetchProject("proj-1");
+    expect(fetch).toHaveBeenCalledWith("/api/projects/proj-1");
+  });
+
+  it("returns project object on successful response", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue(sampleProject),
+    });
+
+    const result = await fetchProject("proj-1");
+    expect(result).toEqual(sampleProject);
+  });
+
+  it("throws 'Project not found' error when server returns 404", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 404,
+      json: vi.fn().mockResolvedValue({ error: "Project not found" }),
+    });
+
+    await expect(fetchProject("unknown-id")).rejects.toThrow("Project not found");
+  });
+
+  it("throws error with server message on non-OK response", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: vi.fn().mockResolvedValue({ error: "Cosmos unavailable" }),
+    });
+
+    await expect(fetchProject("proj-1")).rejects.toThrow("Cosmos unavailable");
+  });
+
+  it("throws HTTP status fallback when error body is not JSON", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: vi.fn().mockRejectedValue(new SyntaxError("not json")),
+    });
+
+    await expect(fetchProject("proj-1")).rejects.toThrow("HTTP 503");
+  });
+});
+
+describe("fetchProjectLogs", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("calls GET /api/projects/:id/logs endpoint", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ lines: [] }),
+    });
+
+    await fetchProjectLogs("proj-1");
+    expect(fetch).toHaveBeenCalledWith("/api/projects/proj-1/logs");
+  });
+
+  it("returns lines array from response body", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ lines: ["Building...", "Done!"] }),
+    });
+
+    const result = await fetchProjectLogs("proj-1");
+    expect(result).toEqual(["Building...", "Done!"]);
+  });
+
+  it("returns empty array when no log lines exist", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ lines: [] }),
+    });
+
+    const result = await fetchProjectLogs("proj-1");
+    expect(result).toEqual([]);
+  });
+
+  it("throws error with server message on non-OK response", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: vi.fn().mockResolvedValue({ error: "Blob storage error" }),
+    });
+
+    await expect(fetchProjectLogs("proj-1")).rejects.toThrow("Blob storage error");
+  });
+
+  it("throws HTTP status fallback when error body is not JSON", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: vi.fn().mockRejectedValue(new SyntaxError("not json")),
+    });
+
+    await expect(fetchProjectLogs("proj-1")).rejects.toThrow("HTTP 503");
   });
 });
