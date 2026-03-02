@@ -13,8 +13,8 @@
 
 ---
 
-- [ ] Create `src/client/lib/api.ts` — typed fetch helpers: `fetchProjects(): Promise<Project[]>` that calls `GET /api/projects` and throws on non-OK responses
-- [ ] Add "Created" date formatting helper in `src/client/lib/api.ts` — `formatDate(iso: string): string` returns a human-readable relative time string using `Intl.RelativeTimeFormat` (e.g., "2 hours ago", "3 days ago")
-- [ ] Create `src/client/pages/DashboardPage.tsx` — page component with three states: loading (skeleton), error (inline message + Retry button + Sonner toast), and data loaded; fetches on mount using `fetchProjects()`
-- [ ] Add page header row to `DashboardPage` — "Projects" heading (`<h1>`) left-aligned and "New Project" button right-aligned on the same row; button navigates to `/projects/new` using React Router `useNavigate`
-- [ ] Register `DashboardPage` in `src/client/App.tsx` — replace the `<div>Dashboard</div>` placeholder at `path="/"` with `<DashboardPage />`
+- [x] Create `src/client/lib/api.ts` — typed fetch helpers: `fetchProjects(): Promise<Project[]>` that calls `GET /api/projects` and throws on non-OK responses
+- [x] Add "Created" date formatting helper in `src/client/lib/api.ts` — `formatDate(iso: string): string` returns a human-readable relative time string using `Intl.RelativeTimeFormat` (e.g., "2 hours ago", "3 days ago")
+- [x] Create `src/client/pages/DashboardPage.tsx` — page component with three states: loading (skeleton), error (inline message + Retry button + Sonner toast), and data loaded; fetches on mount using `fetchProjects()`
+- [x] Add page header row to `DashboardPage` — "Projects" heading (`<h1>`) left-aligned and "New Project" button right-aligned on the same row; button navigates to `/projects/new` using React Router `useNavigate`
+- [x] Register `DashboardPage` in `src/client/App.tsx` — replace the `<div>Dashboard</div>` placeholder at `path="/"` with `<DashboardPage />`
