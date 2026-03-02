@@ -11,10 +11,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use(express.json());
 app.use("/api", apiRouter);
-app.use(express.static(join(__dirname, "../../dist/public")));
+app.use(express.static(join(__dirname, "../../../dist/public")));
 
 app.get("*", (_req, res) => {
-  res.sendFile(join(__dirname, "../../dist/public/index.html"));
+  res.sendFile(join(__dirname, "../../../dist/public/index.html"));
 });
 
 createCosmosContainers().catch((err) => {
