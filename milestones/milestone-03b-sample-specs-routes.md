@@ -1,4 +1,4 @@
-# Milestone: Sample Specs API
+# Milestone: Sample Specs API — Route Handlers
 
 > **Validates:**
 > - `GET /api/health` returns HTTP 200 (app still boots)
@@ -14,13 +14,10 @@
 > - `src/server/routes/index.ts` — router mounting (where to add the new `sampleSpecsRouter`)
 > - `src/shared/types.ts` — `SampleSpec` type already defined here; no new type needed
 
+> **Depends on:** milestone-03a-sample-specs-service (service layer must be complete first)
+
 ---
 
-- [ ] Install `multer` runtime package and `@types/multer` dev package (`npm install multer && npm install -D @types/multer`) for multipart file upload parsing in Express
-- [ ] Create `src/server/lib/sampleSpecsService.ts` with `listSampleSpecs(): Promise<SampleSpec[]>` — calls `getBlobServiceClient().getContainerClient("sample-specs").listBlobsFlat()` and maps each `BlobItem` to `{ name: blob.name, size: blob.properties.contentLength ?? 0, lastModified: blob.properties.lastModified?.toISOString() ?? "" }`
-- [ ] Add `getSampleSpecContent(name: string): Promise<string | null>` to `sampleSpecsService.ts` — gets `BlockBlobClient` for the named blob; returns `null` if the blob does not exist (catch 404 / `BlobNotFound`); otherwise downloads to buffer and returns `buffer.toString("utf-8")`
-- [ ] Add `uploadSampleSpec(name: string, buffer: Buffer, contentType: string): Promise<void>` to `sampleSpecsService.ts` — calls `blockBlobClient.upload(buffer, buffer.length, { blobHTTPHeaders: { blobContentType: contentType } })`
-- [ ] Add `deleteSampleSpec(name: string): Promise<void>` to `sampleSpecsService.ts` — calls `blockBlobClient.deleteIfExists()`
 - [ ] Create `src/server/routes/sampleSpecs.ts` with a `GET /` handler that calls `listSampleSpecs()` and returns the array as JSON; 500 on error
 - [ ] Add `GET /:name` handler to `sampleSpecs.ts` — calls `getSampleSpecContent(req.params.name)`; returns 404 `{ error: "Spec not found" }` if null; otherwise returns `{ name: req.params.name, content }` as JSON
 - [ ] Add `POST /` handler to `sampleSpecs.ts` using `multer({ storage: multer.memoryStorage() }).single("file")` middleware — validates that `req.file` exists and the original filename ends with `.md` (400 otherwise); calls `uploadSampleSpec(req.file.originalname, req.file.buffer, req.file.mimetype || "text/markdown")`; returns 201 `{ name: req.file.originalname }`
