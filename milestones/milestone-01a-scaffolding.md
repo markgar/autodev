@@ -22,7 +22,7 @@
 
 - [x] Configure Tailwind CSS: install `tailwindcss`, `postcss`, `autoprefixer`; create `tailwind.config.js` with content paths `["./index.html", "./src/client/**/*.{ts,tsx}"]`; create `postcss.config.js`; create `src/client/index.css` with `@tailwind base; @tailwind components; @tailwind utilities`; import `index.css` in `main.tsx`
 
-- [ ] Initialize shadcn/ui: install `@radix-ui/react-slot`, `class-variance-authority`, `clsx`, `tailwind-merge`, `tailwindcss-animate`; create `components.json` (style: default, tailwind config path, src/client/components/ui alias); add path alias `@` → `src/client` in `vite.config.ts` and `tsconfig.client.json`; create `src/client/lib/utils.ts` with `cn()` helper using `clsx` + `tailwind-merge`
+- [x] Initialize shadcn/ui: install `@radix-ui/react-slot`, `class-variance-authority`, `clsx`, `tailwind-merge`, `tailwindcss-animate`; create `components.json` (style: default, tailwind config path, src/client/components/ui alias); add path alias `@` → `src/client` in `vite.config.ts` and `tsconfig.client.json`; create `src/client/lib/utils.ts` with `cn()` helper using `clsx` + `tailwind-merge`
 
 - [ ] Install Azure SDK packages: `@azure/storage-blob`, `@azure/cosmos`, `@azure/identity` (production dependencies in `package.json`)
 
