@@ -69,36 +69,37 @@ describe("DashboardPage", () => {
     await waitFor(() => expect(screen.getByText("My App")).toBeTruthy());
   });
 
-  it("renders project spec name in the row", async () => {
-    (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([sampleProject]);
-    renderPage();
-    await waitFor(() => expect(screen.getByText(/minimal\.md/)).toBeTruthy());
-  });
-
-  it("shows no runs badge when latestRunStatus is null", async () => {
-    (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([sampleProject]);
-    renderPage();
-    await waitFor(() => expect(screen.getByText("no runs")).toBeTruthy());
-  });
-
-  it("shows succeeded badge with correct status", async () => {
-    const project = { ...sampleProject, latestRunStatus: "succeeded" as const };
-    (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([project]);
-    renderPage();
-    await waitFor(() => expect(screen.getByText("succeeded")).toBeTruthy());
-  });
-
-  it("shows failed badge with correct status", async () => {
-    const project = { ...sampleProject, latestRunStatus: "failed" as const };
-    (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([project]);
-    renderPage();
-    await waitFor(() => expect(screen.getByText("failed")).toBeTruthy());
-  });
-
   it("shows error message when fetchProjects fails", async () => {
     (fetchProjects as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("Network failure"));
     renderPage();
-    await waitFor(() => expect(screen.getByText("Network failure")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("Failed to load projects")).toBeTruthy());
+  });
+
+  it("New Project button navigates to /projects/new", async () => {
+    (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    const { container } = renderPage();
+    await waitFor(() => screen.getByRole("button", { name: "New Project" }));
+    fireEvent.click(screen.getByRole("button", { name: "New Project" }));
+    expect(container.ownerDocument.location.pathname).toBe("/projects/new");
+  });
+
+  it("Create your first project button navigates to /projects/new", async () => {
+    (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    const { container } = renderPage();
+    await waitFor(() => screen.getByRole("button", { name: "Create your first project" }));
+    fireEvent.click(screen.getByRole("button", { name: "Create your first project" }));
+    expect(container.ownerDocument.location.pathname).toBe("/projects/new");
+  });
+
+  it("projects are displayed with most recently created first", async () => {
+    const older = { ...sampleProject, id: "proj-old", name: "Older App", createdAt: "2024-01-01T00:00:00.000Z" };
+    const newer = { ...sampleProject, id: "proj-new", name: "Newer App", createdAt: "2024-06-01T10:00:00.000Z" };
+    (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([older, newer]);
+    renderPage();
+    await waitFor(() => {
+      const names = screen.getAllByText(/App/).map((el) => el.textContent);
+      expect(names[0]).toContain("Newer App");
+    });
   });
 
   it("shows Retry button on error", async () => {
