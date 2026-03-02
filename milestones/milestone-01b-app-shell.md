@@ -11,7 +11,7 @@
 > - `src/client/App.tsx` — React Router and layout shell
 > - `src/client/components/AppLayout.tsx` — sidebar layout component
 
-- [ ] Install `react-router-dom` and set up React Router in `src/client/App.tsx`: wrap with `<BrowserRouter>`, add `<Routes>` with placeholder `<Route>` entries for `/` (Dashboard placeholder), `/projects/new` (placeholder), `/projects/:id` (placeholder), `/admin/sample-specs` (placeholder); each placeholder renders a `<div>` with the route name
+- [x] Install `react-router-dom` and set up React Router in `src/client/App.tsx`: wrap with `<BrowserRouter>`, add `<Routes>` with placeholder `<Route>` entries for `/` (Dashboard placeholder), `/projects/new` (placeholder), `/projects/:id` (placeholder), `/admin/sample-specs` (placeholder); each placeholder renders a `<div>` with the route name
 
 - [ ] Add shadcn/ui Sidebar components: manually create `src/client/components/ui/sidebar.tsx` exporting `SidebarProvider`, `Sidebar`, `SidebarHeader`, `SidebarContent`, `SidebarGroup`, `SidebarGroupLabel`, `SidebarMenu`, `SidebarMenuItem`, `SidebarMenuButton`, `SidebarTrigger`, and `useSidebar` hook; implement open/close state in `SidebarProvider` via React context; `Sidebar` renders as a fixed `w-64` panel; `SidebarTrigger` toggles sidebar open/closed
 

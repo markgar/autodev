@@ -1,7 +1,14 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 export default function App() {
   return (
-    <div className="min-h-screen bg-background">
-      <h1 className="text-2xl font-bold p-4">AutoDev</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<div>Dashboard</div>} />
+        <Route path="/projects/new" element={<div>New Project</div>} />
+        <Route path="/projects/:id" element={<div>Project Detail</div>} />
+        <Route path="/admin/sample-specs" element={<div>Sample Specs</div>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
