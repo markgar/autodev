@@ -24,7 +24,7 @@
 
 - [x] Initialize shadcn/ui: install `@radix-ui/react-slot`, `class-variance-authority`, `clsx`, `tailwind-merge`, `tailwindcss-animate`; create `components.json` (style: default, tailwind config path, src/client/components/ui alias); add path alias `@` → `src/client` in `vite.config.ts` and `tsconfig.client.json`; create `src/client/lib/utils.ts` with `cn()` helper using `clsx` + `tailwind-merge`
 
-- [ ] Install Azure SDK packages: `@azure/storage-blob`, `@azure/cosmos`, `@azure/identity` (production dependencies in `package.json`)
+- [x] Install Azure SDK packages: `@azure/storage-blob`, `@azure/cosmos`, `@azure/identity` (production dependencies in `package.json`)
 
 - [ ] Create Cosmos DB client module `src/server/lib/cosmosClient.ts`: derive account URL as `https://cosmos-autodev-${STAMP_ID}.documents.azure.com:443/` where `STAMP_ID = process.env.STAMP_ID ?? "qqq"`; initialize `CosmosClient` with `DefaultAzureCredential`; export `createCosmosContainers()` that calls `client.databases.createIfNotExists({ id: "autodev" })` then `database.containers.createIfNotExists({ id: "items", partitionKey: { paths: ["/organizationId"] } })`; wrap in try/catch and re-throw
 
