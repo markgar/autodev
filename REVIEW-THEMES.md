@@ -1,6 +1,6 @@
 # Review Themes
 
-Last updated: App Shell
+Last updated: Infrastructure & Health Fixes
 
 1. **tsconfig rootDir/include mismatch** — When `tsconfig.server.json` includes files outside `rootDir` (e.g., `src/shared`), set `rootDir` to the common ancestor (`src`), then update all path-dependent scripts (e.g., `start`) to match the new output layout (`dist/server/server/index.js`).
 2. **Start script not updated after tsconfig changes** — Any change to `rootDir` or `outDir` in a tsconfig must be followed immediately by updating every `package.json` script that references compiled output paths; the build succeeding is not sufficient verification.
@@ -12,3 +12,5 @@ Last updated: App Shell
 8. **shadcn/ui CSS variables never initialised** — Calling `shadcn/ui init` or manually adopting its component patterns requires two setup steps that are often skipped: (a) adding CSS custom property definitions (`:root { --background: ...; }`) to the global CSS file and (b) extending `tailwind.config.js` to map those variables to Tailwind color utilities. Without both steps, all `bg-background`, `bg-accent`, `bg-sidebar`, etc. classes are dead and the UI renders with no colours.
 9. **Dead imports left after refactoring** — When a component's implementation changes from the original design (e.g., using `NavLink` directly instead of `SidebarMenuButton`), remove imports that are no longer referenced; unused imports mislead readers into thinking a dependency is active.
 10. **Interactive-only elements must be keyboard-accessible** — Any `<div>` or `<span>` with an `onClick` handler used for UI control (e.g., modal backdrop close) must also have `role`, `tabIndex`, and `onKeyDown`; omitting these makes the control invisible to keyboard and assistive-technology users.
+11. **Test mock res must match all handler code paths** — When a handler has an error branch that calls `res.status(code).json(...)`, the mock `res` object in every test for that handler must include a `status()` method that returns `res`; omitting it causes `TypeError` in CI rather than a clean assertion failure.
+12. **Handler tests must mock external I/O** — Unit tests for route handlers that call external services (Cosmos, Blob, DB) must use `vi.mock` / `jest.mock` for every SDK module imported by the handler; running against live services makes tests non-deterministic, environment-dependent, and breaks CI pipelines.
