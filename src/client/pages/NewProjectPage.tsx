@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { fetchSampleSpecs } from "@/lib/api";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { fetchSampleSpecs, createProject } from "@/lib/api";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -22,14 +26,17 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export function NewProjectPage() {
+  const navigate = useNavigate();
   const [specs, setSpecs] = useState<SampleSpec[]>([]);
   const [specsLoading, setSpecsLoading] = useState(true);
   const [specsError, setSpecsError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const {
     register,
     setValue,
     watch,
+    handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -37,6 +44,7 @@ export function NewProjectPage() {
   });
 
   const specName = watch("specName");
+  const noSpecs = !specsLoading && (specsError !== null || specs.length === 0);
 
   useEffect(() => {
     fetchSampleSpecs()
@@ -54,8 +62,19 @@ export function NewProjectPage() {
     return filename.replace(/\.md$/i, "");
   }
 
+  async function onSubmit(values: FormValues) {
+    setSubmitting(true);
+    try {
+      const project = await createProject({ name: values.name, specName: values.specName });
+      navigate(`/projects/${project.id}`);
+    } catch (err: unknown) {
+      toast.error((err instanceof Error ? err.message : "Failed to create project"));
+      setSubmitting(false);
+    }
+  }
+
   return (
-    <div className="space-y-6 max-w-lg">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
       <h1 className="text-2xl font-bold">New Project</h1>
 
       <div className="space-y-2">
@@ -79,7 +98,7 @@ export function NewProjectPage() {
             </SelectTrigger>
             <SelectContent />
           </Select>
-        ) : specsError || specs.length === 0 ? (
+        ) : noSpecs ? (
           <p className="text-sm text-muted-foreground">
             No specs available — upload specs in Admin first
           </p>
@@ -104,6 +123,16 @@ export function NewProjectPage() {
           <p className="text-sm text-destructive">{errors.specName.message}</p>
         )}
       </div>
-    </div>
+
+      <div className="flex gap-3">
+        <Button type="submit" disabled={submitting || noSpecs}>
+          {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Create Project
+        </Button>
+        <Button type="button" variant="outline" onClick={() => navigate("/")}>
+          Cancel
+        </Button>
+      </div>
+    </form>
   );
 }
