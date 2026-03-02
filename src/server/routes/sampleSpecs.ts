@@ -10,7 +10,7 @@ import {
 const sampleSpecsRouter = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 1 * 1024 * 1024 }, // 1 MB — markdown files should be tiny
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
 });
 
 sampleSpecsRouter.get("/", async (_req, res) => {
@@ -36,9 +36,13 @@ sampleSpecsRouter.get("/:name", async (req, res) => {
 });
 
 sampleSpecsRouter.post("/", (req, res, next) => {
-  upload.single("file")(req, res, (err: unknown) => {
+  upload.single("file")(req, res, (err) => {
+    if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
+      res.status(413).json({ error: "File too large (max 5 MB)" });
+      return;
+    }
     if (err) {
-      res.status(413).json({ error: "File too large" });
+      next(err);
       return;
     }
     next();

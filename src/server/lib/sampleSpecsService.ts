@@ -14,12 +14,20 @@ async function listSampleSpecs(): Promise<SampleSpec[]> {
     return [];
   }
   const specs: SampleSpec[] = [];
-  for await (const blob of containerClient.listBlobsFlat()) {
-    specs.push({
-      name: blob.name,
-      size: blob.properties.contentLength ?? 0,
-      lastModified: blob.properties.lastModified?.toISOString() ?? "",
-    });
+  try {
+    for await (const blob of containerClient.listBlobsFlat()) {
+      specs.push({
+        name: blob.name,
+        size: blob.properties.contentLength ?? 0,
+        lastModified: blob.properties.lastModified?.toISOString() ?? "",
+      });
+    }
+  } catch (err: unknown) {
+    const e = err as { statusCode?: number; code?: string };
+    if (e?.statusCode === 404 || e?.code === "ContainerNotFound") {
+      return [];
+    }
+    throw err;
   }
   return specs;
 }
