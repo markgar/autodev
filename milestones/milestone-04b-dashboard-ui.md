@@ -13,7 +13,7 @@
 
 ---
 
-- [ ] Add loading skeleton to `DashboardPage` — render 3–5 `Skeleton` rows (shadcn/ui `Skeleton` component) while the fetch is in flight
+- [x] Add loading skeleton to `DashboardPage` — render 3–5 `Skeleton` rows (shadcn/ui `Skeleton` component) while the fetch is in flight
 - [ ] Add empty state to `DashboardPage` — when the project list is empty, render a centered "No projects yet" message and a "Create your first project" button that navigates to `/projects/new`
 - [ ] Add error state to `DashboardPage` — when the fetch fails, fire a Sonner `toast.error(...)` and render inline "Failed to load projects" text with a "Retry" button that re-triggers the fetch
 - [ ] Add desktop table to `DashboardPage` — hidden on mobile (`hidden md:block`); renders an HTML `<table>` with columns "Name" and "Created"; each row is wrapped in a `<tr>` with an `onClick` that navigates to `/projects/:id`; projects sorted by `createdAt` descending

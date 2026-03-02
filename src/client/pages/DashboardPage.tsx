@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { fetchProjects, formatDate } from "@/lib/api";
 import type { Project } from "../../shared/types";
 
 function ProjectSkeleton() {
   return (
-    <div className="animate-pulse space-y-3">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="h-16 bg-muted rounded-md" />
+    <div className="space-y-3">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Skeleton key={i} className="h-16 w-full" />
       ))}
     </div>
   );
