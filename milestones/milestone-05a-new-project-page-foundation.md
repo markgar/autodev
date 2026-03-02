@@ -12,7 +12,7 @@
 
 ---
 
-- [ ] Add `fetchSampleSpecs()` helper to `src/client/lib/api.ts` — calls `GET /api/sample-specs`, returns `Promise<SampleSpec[]>`, throws `Error(body.error)` on non-ok response (same pattern as `fetchProjects`)
+- [x] Add `fetchSampleSpecs()` helper to `src/client/lib/api.ts` — calls `GET /api/sample-specs`, returns `Promise<SampleSpec[]>`, throws `Error(body.error)` on non-ok response (same pattern as `fetchProjects`)
 - [ ] Add `createProject()` helper to `src/client/lib/api.ts` — calls `POST /api/projects` with JSON body `{ name: string; specName: string }`, returns `Promise<Project>`, throws `Error(body.error)` on non-ok response
 - [ ] Add shadcn/ui `form`, `input`, `label`, and `select` components — run `npx shadcn@latest add form input label select` in the project root to generate the component files in `src/client/components/ui/`
 - [ ] Guard `listSampleSpecs` against a missing container in `src/server/lib/sampleSpecsService.ts` — wrap the `listBlobsFlat` iteration in a `try/catch`; if `(err as { statusCode?: number }).statusCode === 404` or `(err as { code?: string }).code === 'ContainerNotFound'` return an empty array; re-throw all other errors (fixes finding #33)
