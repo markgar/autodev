@@ -28,7 +28,7 @@
 
 - [x] Create Cosmos DB client module `src/server/lib/cosmosClient.ts`: derive account URL as `https://cosmos-autodev-${STAMP_ID}.documents.azure.com:443/` where `STAMP_ID = process.env.STAMP_ID ?? "qqq"`; initialize `CosmosClient` with `DefaultAzureCredential`; export `createCosmosContainers()` that calls `client.databases.createIfNotExists({ id: "autodev" })` then `database.containers.createIfNotExists({ id: "items", partitionKey: { paths: ["/organizationId"] } })`; wrap in try/catch and re-throw
 
-- [ ] Create Blob Storage client module `src/server/lib/blobClient.ts`: derive account URL as `https://stautodev${STAMP_ID}.blob.core.windows.net`; initialize `BlobServiceClient` with `DefaultAzureCredential`; export `getBlobServiceClient()` returning the singleton client
+- [x] Create Blob Storage client module `src/server/lib/blobClient.ts`: derive account URL as `https://stautodev${STAMP_ID}.blob.core.windows.net`; initialize `BlobServiceClient` with `DefaultAzureCredential`; export `getBlobServiceClient()` returning the singleton client
 
 - [ ] Define shared TypeScript types in `src/shared/types.ts`: `Project` interface (id: string, organizationId: string, type: "project", name: string, specName: string, createdAt: string, latestRunStatus: "pending" | "running" | "succeeded" | "failed" | null, runCount: number); `ApiError` interface ({ error: string }); `SampleSpec` interface (name: string, size: number, lastModified: string)
 
