@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 
 // Mock the hookform resolver so tests work without the installed package
@@ -65,9 +65,11 @@ const sampleSpecs = [
 
 function renderPage() {
   return render(
-    <MemoryRouter>
-      <Toaster />
-      <NewProjectPage />
+    <MemoryRouter initialEntries={["/new"]}>
+      <Routes>
+        <Route path="/new" element={<><Toaster /><NewProjectPage /></>} />
+        <Route path="/projects/:id" element={<div data-testid="project-detail" />} />
+      </Routes>
     </MemoryRouter>
   );
 }
@@ -193,13 +195,13 @@ describe("NewProjectPage", () => {
     };
     (fetchSampleSpecs as ReturnType<typeof vi.fn>).mockResolvedValue(sampleSpecs);
     (createProject as ReturnType<typeof vi.fn>).mockResolvedValue(project);
-    const { container } = renderPage();
+    renderPage();
     await waitFor(() => screen.getByTestId("spec-select"));
     fireEvent.change(screen.getByLabelText("Project Name"), { target: { value: "New App" } });
     fireEvent.change(screen.getByTestId("spec-select"), { target: { value: "full-stack-app.md" } });
     fireEvent.submit(document.querySelector("form")!);
     await waitFor(() =>
-      expect(container.ownerDocument.location.pathname).toBe("/projects/proj-456")
+      expect(screen.getByTestId("project-detail")).toBeTruthy()
     );
   });
 

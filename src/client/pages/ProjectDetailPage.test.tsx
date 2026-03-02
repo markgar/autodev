@@ -19,7 +19,7 @@ const sampleProject = {
   name: "My Test App",
   specName: "minimal.md",
   createdAt: "2024-06-01T10:00:00.000Z",
-  latestRunStatus: null as null,
+  latestRunStatus: null,
   runCount: 0,
 };
 
@@ -43,7 +43,7 @@ describe("ProjectDetailPage", () => {
     (fetchProject as ReturnType<typeof vi.fn>).mockReturnValue(new Promise(() => {}));
     (fetchProjectLogs as ReturnType<typeof vi.fn>).mockResolvedValue([]);
     renderPage();
-    expect(document.querySelector(".animate-spin")).toBeTruthy();
+    expect(screen.getByRole("status", { name: "Loading" })).toBeTruthy();
   });
 
   it("renders project name as h1 heading after successful load", async () => {
