@@ -16,7 +16,7 @@
 
 - [x] Create Express server entry point `src/server/index.ts`: import express, serve `dist/public` as static files with `express.static`, register API router at `/api`, call `createCosmosContainers()` on startup (log error without crashing), listen on `process.env.PORT ?? 3000`, log `Server listening on port …`
 
-- [ ] Add GET `/api/health` route handler in `src/server/routes/health.ts` returning `res.json({ status: "ok" })`; create `src/server/routes/index.ts` that mounts the health router and exports the combined API router; import and use it in `src/server/index.ts`
+- [x] Add GET `/api/health` route handler in `src/server/routes/health.ts` returning `res.json({ status: "ok" })`; create `src/server/routes/index.ts` that mounts the health router and exports the combined API router; import and use it in `src/server/index.ts`
 
 - [ ] Scaffold Vite + React SPA: `index.html` (root HTML, mounts `#root`), `src/client/main.tsx` (renders `<App />`), `src/client/App.tsx` (placeholder "AutoDev" heading), `vite.config.ts` (React plugin, output `dist/public`, `/api` proxy to `http://localhost:3000`)
 
