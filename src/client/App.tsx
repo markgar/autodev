@@ -1,7 +1,17 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AppLayout } from "@/components/AppLayout";
+
 export default function App() {
   return (
-    <div className="min-h-screen bg-background">
-      <h1 className="text-2xl font-bold p-4">AutoDev</h1>
-    </div>
+    <BrowserRouter>
+      <AppLayout>
+        <Routes>
+          <Route path="/" element={<div>Dashboard</div>} />
+          <Route path="/projects/new" element={<div>New Project</div>} />
+          <Route path="/projects/:id" element={<div>Project Detail</div>} />
+          <Route path="/admin/sample-specs" element={<div>Sample Specs</div>} />
+        </Routes>
+      </AppLayout>
+    </BrowserRouter>
   );
 }
