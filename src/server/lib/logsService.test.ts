@@ -19,7 +19,7 @@ function makeMockContainerClient(exists: boolean, blobs: Array<{ name: string; c
     exists: vi.fn().mockResolvedValue(exists),
     listBlobsFlat: vi.fn(async function* () {
       for (const blob of blobs) {
-        yield { name: blob.name };
+        yield { name: blob.name, properties: { contentLength: Buffer.byteLength(blob.content, "utf-8") } };
       }
     }),
     getBlockBlobClient: vi.fn((name: string) => blockBlobClients[name]),
