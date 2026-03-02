@@ -1,6 +1,6 @@
 # Review Themes
 
-Last updated: Sample Specs API — Service Layer
+Last updated: Sample Specs API — Route Handlers
 
 1. **tsconfig rootDir/include mismatch** — When `tsconfig.server.json` includes files outside `rootDir` (e.g., `src/shared`), set `rootDir` to the common ancestor (`src`), then update all path-dependent scripts (e.g., `start`) to match the new output layout (`dist/server/server/index.js`).
 2. **Start script not updated after tsconfig changes** — Any change to `rootDir` or `outDir` in a tsconfig must be followed immediately by updating every `package.json` script that references compiled output paths; the build succeeding is not sufficient verification.
@@ -20,3 +20,4 @@ Last updated: Sample Specs API — Service Layer
 16. **New service modules must include their own tests in the same milestone** — When a milestone introduces a `*Service.ts`, its `*Service.test.ts` must be in the same set of commits; shipping a service without tests and patching in a separate tester pass leaves the milestone non-self-contained and coverage gaps untracked.
 17. **Committed `.js` stubs alongside `.ts` source files cause silent module-resolution shadowing** — Never commit a hand-authored `.js` file with the same stem as a `.ts` source file (e.g., `types.js` next to `types.ts`); at Node.js runtime the `.js` wins and hides any runtime exports the `.ts` may later add; fix module-resolution issues with `resolve.alias` or `vite-tsconfig-paths` configuration instead.
 18. **Service functions that iterate blob containers must guard against non-existent containers** — Before calling `listBlobsFlat()` on a container that may not exist (e.g., infrastructure not yet provisioned), call `containerClient.exists()` and return a safe empty value; propagating an unhandled SDK 404 as a 500 is confusing and avoidable.
+19. **`multer.memoryStorage()` without `limits.fileSize` is a DoS vector** — Any file upload handler using in-memory storage must set `limits: { fileSize: N }` on the multer instance; without it a single large upload can exhaust the process heap; also handle the resulting `MulterError` to return a clean 413 rather than crashing or hanging.
