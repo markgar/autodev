@@ -11,7 +11,7 @@
 > - Utilities: `src/client/lib/utils.ts` (`cn()` helper — add `formatFileSize` here)
 > - Server route: `src/server/routes/sampleSpecs.ts` (existing sample-specs API — thin handlers, multer upload)
 
-- [ ] Fix bug: set `MAX_UPLOAD_BYTES = 1 * 1024 * 1024` (1 MB) and update the 413 error message to "File too large (max 1 MB)" in `src/server/routes/sampleSpecs.ts` (reverts the merge-conflict regression from issue #53)
+- [x] Fix bug: set `MAX_UPLOAD_BYTES = 1 * 1024 * 1024` (1 MB) and update the 413 error message to "File too large (max 1 MB)" in `src/server/routes/sampleSpecs.ts` (reverts the merge-conflict regression from issue #53)
 
 - [ ] Add `formatFileSize(bytes: number): string` helper to `src/client/lib/utils.ts` — converts bytes to human-readable string (e.g. `1023` → `"1,023 B"`, `12400` → `"12.1 KB"`, `1500000` → `"1.4 MB"`)
 
