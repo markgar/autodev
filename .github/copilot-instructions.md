@@ -50,6 +50,18 @@ The `client/` subtree never imports from `server/`. Cross-boundary types belong 
 - `BACKLOG.md` — work items and task tracking
 - `README.md` — project overview and setup instructions
 - `.github/copilot-instructions.md` — this style guide (update as the project evolves)
+- `src/server/index.ts` — Express server entry point; serves static SPA and mounts `/api` router
+- `src/server/routes/index.ts` — API router; mounts all route handlers
+- `src/server/routes/health.ts` — GET `/api/health` handler
+- `src/server/lib/cosmosClient.ts` — Cosmos DB client singleton and container initialisation
+- `src/server/lib/blobClient.ts` — Blob Storage client singleton
+- `src/shared/types.ts` — TypeScript types shared between server and client
+- `src/client/main.tsx` — React SPA entry point
+- `src/client/App.tsx` — Root app component
+- `src/client/lib/utils.ts` — `cn()` Tailwind class merge helper
+- `vite.config.ts` — Vite build configuration (React plugin, `/api` proxy, `@` path alias)
+- `tsconfig.server.json` — TypeScript config for server (tsc, NodeNext)
+- `tsconfig.client.json` — TypeScript config for client (Vite/Bundler, DOM)
 
 ## Architecture
 
