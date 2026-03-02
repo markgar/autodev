@@ -17,9 +17,6 @@ function ProjectSkeleton() {
 }
 
 function DesktopTable({ projects, navigate }: { projects: Project[]; navigate: (path: string) => void }) {
-  const sorted = [...projects].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
   return (
     <table className="w-full text-sm">
       <thead>
@@ -29,10 +26,13 @@ function DesktopTable({ projects, navigate }: { projects: Project[]; navigate: (
         </tr>
       </thead>
       <tbody>
-        {sorted.map((p) => (
+        {projects.map((p) => (
           <tr
             key={p.id}
+            role="button"
+            tabIndex={0}
             onClick={() => navigate(`/projects/${p.id}`)}
+            onKeyDown={(e) => e.key === "Enter" && navigate(`/projects/${p.id}`)}
             className="border-b cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             <td className="py-3 pr-4 font-medium">{p.name}</td>
@@ -45,12 +45,9 @@ function DesktopTable({ projects, navigate }: { projects: Project[]; navigate: (
 }
 
 function MobileCardList({ projects, navigate }: { projects: Project[]; navigate: (path: string) => void }) {
-  const sorted = [...projects].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
   return (
     <div className="space-y-2">
-      {sorted.map((p) => (
+      {projects.map((p) => (
         <div
           key={p.id}
           role="button"
@@ -92,6 +89,10 @@ export function DashboardPage() {
     load();
   }, []);
 
+  const sortedProjects = projects
+    ? [...projects].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    : null;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -110,9 +111,9 @@ export function DashboardPage() {
         </div>
       )}
 
-      {!loading && !error && projects && (
+      {!loading && !error && sortedProjects && (
         <div className="space-y-2">
-          {projects.length === 0 ? (
+          {sortedProjects.length === 0 ? (
             <div className="flex flex-col items-center gap-4 py-12 text-center">
               <p className="text-muted-foreground">No projects yet</p>
               <Button onClick={() => navigate("/projects/new")}>
@@ -122,10 +123,10 @@ export function DashboardPage() {
           ) : (
             <>
               <div className="hidden md:block">
-                <DesktopTable projects={projects} navigate={navigate} />
+                <DesktopTable projects={sortedProjects} navigate={navigate} />
               </div>
               <div className="block md:hidden">
-                <MobileCardList projects={projects} navigate={navigate} />
+                <MobileCardList projects={sortedProjects} navigate={navigate} />
               </div>
             </>
           )}
