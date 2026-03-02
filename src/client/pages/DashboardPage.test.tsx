@@ -1,7 +1,7 @@
 import React from "react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { DashboardPage } from "./DashboardPage.js";
 
@@ -25,9 +25,11 @@ const sampleProject = {
 
 function renderPage() {
   return render(
-    <MemoryRouter>
-      <Toaster />
-      <DashboardPage />
+    <MemoryRouter initialEntries={["/"]}>
+      <Routes>
+        <Route path="/" element={<><Toaster /><DashboardPage /></>} />
+        <Route path="/projects/new" element={<div data-testid="new-project-page" />} />
+      </Routes>
     </MemoryRouter>
   );
 }
@@ -66,7 +68,7 @@ describe("DashboardPage", () => {
   it("renders project name for each loaded project", async () => {
     (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([sampleProject]);
     renderPage();
-    await waitFor(() => expect(screen.getByText("My App")).toBeTruthy());
+    await waitFor(() => expect(screen.getAllByText("My App").length).toBeGreaterThan(0));
   });
 
   it("shows error message when fetchProjects fails", async () => {
@@ -77,18 +79,18 @@ describe("DashboardPage", () => {
 
   it("New Project button navigates to /projects/new", async () => {
     (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-    const { container } = renderPage();
+    renderPage();
     await waitFor(() => screen.getByRole("button", { name: "New Project" }));
     fireEvent.click(screen.getByRole("button", { name: "New Project" }));
-    expect(container.ownerDocument.location.pathname).toBe("/projects/new");
+    await waitFor(() => expect(screen.getByTestId("new-project-page")).toBeTruthy());
   });
 
   it("Create your first project button navigates to /projects/new", async () => {
     (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-    const { container } = renderPage();
+    renderPage();
     await waitFor(() => screen.getByRole("button", { name: "Create your first project" }));
     fireEvent.click(screen.getByRole("button", { name: "Create your first project" }));
-    expect(container.ownerDocument.location.pathname).toBe("/projects/new");
+    await waitFor(() => expect(screen.getByTestId("new-project-page")).toBeTruthy());
   });
 
   it("projects are displayed with most recently created first", async () => {
@@ -123,8 +125,8 @@ describe("DashboardPage", () => {
     (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([sampleProject, second]);
     renderPage();
     await waitFor(() => {
-      expect(screen.getByText("My App")).toBeTruthy();
-      expect(screen.getByText("Second App")).toBeTruthy();
+      expect(screen.getAllByText("My App").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Second App").length).toBeGreaterThan(0);
     });
   });
 });
