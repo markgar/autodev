@@ -1,7 +1,6 @@
 ## Milestone: Projects API
 
 > **Validates:**
-> - `GET /api/health` returns HTTP 200 `{ "status": "ok" }` when Azure is reachable; returns 503 when Azure is not reachable (validator should test the 200 path)
 > - `POST /api/projects` with body `{ "name": "Test App", "specName": "minimal.md" }` returns HTTP 201 with a JSON body containing `id`, `name`, `specName`, `createdAt`, `organizationId`, `type`, `latestRunStatus: null`, `runCount: 0`
 > - `GET /api/projects` returns HTTP 200 with a JSON array (may be empty `[]`)
 > - `GET /api/projects/:id` with the id from the POST response returns HTTP 200 with the project JSON
@@ -15,12 +14,6 @@
 > - `src/server/lib/cosmosClient.ts` — how to get the Cosmos `client` singleton
 > - `src/server/lib/blobClient.ts` — how to get the `BlobServiceClient` singleton
 > - `src/shared/types.ts` — `Project` interface (all fields required by the API response)
-
-- [ ] Fix `start` script path bug (finding #5): in `package.json` change `"start": "node dist/server/index.js"` to `"start": "node dist/server/server/index.js"` so `npm start` resolves the compiled entry point correctly after `tsc` outputs to `dist/server/server/index.js`
-
-- [ ] Remove no-op try/catch from `createCosmosContainers` in `src/server/lib/cosmosClient.ts` (finding #7): delete the `try { ... } catch (err) { throw err; }` wrapper, leaving the two `await` calls at the top level of the function; the caller in `index.ts` already handles errors with `.catch()`
-
-- [ ] Update `GET /api/health` in `src/server/routes/health.ts` to probe dependencies (finding #6): import `client` from `../lib/cosmosClient.js` and `getBlobServiceClient` from `../lib/blobClient.js`; make the handler `async`; call `await client.getDatabaseAccount()` and `await getBlobServiceClient().getAccountInfo()`; return `{ status: "ok" }` on success and `res.status(503).json({ status: "error", error: String(err) })` on failure
 
 - [ ] Create `src/server/lib/projectsService.ts` with three exported functions: `createProject(name: string, specName: string): Promise<Project>` — builds a document with `id: crypto.randomUUID()`, `organizationId: "default"`, `type: "project"`, `name`, `specName`, `createdAt: new Date().toISOString()`, `latestRunStatus: null`, `runCount: 0`; writes it via `client.database("autodev").container("items").items.create(doc)`; returns the created doc cast as `Project`
 
