@@ -20,6 +20,25 @@ export async function fetchSampleSpecs(): Promise<SampleSpec[]> {
   return res.json();
 }
 
+export async function fetchProject(id: string): Promise<Project> {
+  const res = await fetch(`/api/projects/${id}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function fetchProjectLogs(id: string): Promise<string[]> {
+  const res = await fetch(`/api/projects/${id}/logs`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `HTTP ${res.status}`);
+  }
+  const data: { lines: string[] } = await res.json();
+  return data.lines;
+}
+
 export async function createProject(data: { name: string; specName: string }): Promise<Project> {
   const res = await fetch("/api/projects", {
     method: "POST",
