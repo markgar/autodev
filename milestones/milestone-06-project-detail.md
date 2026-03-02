@@ -28,4 +28,4 @@
 
 - [x] Add the Pause/Resume button and pulsing dot indicator inside the log viewer: absolutely positioned in the top-right corner of the log viewer with `className="absolute top-2 right-2 flex items-center gap-2"`; a `<span className={\`w-2 h-2 rounded-full \${polling ? 'bg-green-500 animate-pulse' : 'bg-zinc-500'}\`} />`; a `<Button size="sm" variant="ghost" className="h-7 px-2 text-zinc-100 hover:text-white hover:bg-zinc-700">` that shows `<Pause className="h-3 w-3 mr-1" /> Pause` when `polling === true` and `<Play className="h-3 w-3 mr-1" /> Resume` when `polling === false`; clicking toggles the `polling` state
 
-- [ ] Register `ProjectDetailPage` in `src/client/App.tsx`: import `{ ProjectDetailPage }` from `@/pages/ProjectDetailPage` and replace `<div>Project Detail</div>` with `<ProjectDetailPage />` on the `path="/projects/:id"` route
+- [x] Register `ProjectDetailPage` in `src/client/App.tsx`: import `{ ProjectDetailPage }` from `@/pages/ProjectDetailPage` and replace `<div>Project Detail</div>` with `<ProjectDetailPage />` on the `path="/projects/:id"` route
