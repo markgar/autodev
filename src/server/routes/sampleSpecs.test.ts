@@ -45,7 +45,14 @@ function getRouteHandler(method: "get" | "post" | "delete", path: string, stackI
   const layer = (sampleSpecsRouter.stack as any[]).find(
     (l) => l.route?.path === path && l.route?.methods?.[method]
   );
-  return layer.route.stack[stackIndex].handle;
+  if (!layer) {
+    throw new Error(`No route registered for ${method.toUpperCase()} ${path}`);
+  }
+  const handler = layer.route.stack[stackIndex]?.handle;
+  if (!handler) {
+    throw new Error(`No handler at stack index ${stackIndex} for ${method.toUpperCase()} ${path}`);
+  }
+  return handler;
 }
 
 const sampleSpec = {

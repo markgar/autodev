@@ -11,6 +11,21 @@ const CreateProjectSchema = z.object({
   specName: z.string().min(1),
 });
 
+async function createProjectWithBlobContainer(name: string, specName: string) {
+  const project = await createProject(name, specName);
+  try {
+    await getBlobServiceClient().getContainerClient(project.id).createIfNotExists();
+  } catch (blobErr) {
+    try {
+      await deleteProject(project.id);
+    } catch (deleteErr) {
+      console.error("Failed to rollback Cosmos record after blob creation failure:", deleteErr);
+    }
+    throw blobErr;
+  }
+  return project;
+}
+
 projectsRouter.post("/", async (req, res) => {
   try {
     const result = CreateProjectSchema.safeParse(req.body);
@@ -18,18 +33,7 @@ projectsRouter.post("/", async (req, res) => {
       res.status(400).json({ error: result.error.message });
       return;
     }
-    const { name, specName } = result.data;
-    const project = await createProject(name, specName);
-    try {
-      await getBlobServiceClient().getContainerClient(project.id).createIfNotExists();
-    } catch (blobErr) {
-      try {
-        await deleteProject(project.id);
-      } catch (deleteErr) {
-        console.error("Failed to rollback Cosmos record after blob creation failure:", deleteErr);
-      }
-      throw blobErr;
-    }
+    const project = await createProjectWithBlobContainer(result.data.name, result.data.specName);
     res.status(201).json(project);
   } catch (err) {
     res.status(500).json({ error: String(err) });

@@ -87,14 +87,14 @@ describe("fetchProjects", () => {
     await expect(fetchProjects()).rejects.toThrow("Database unavailable");
   });
 
-  it("throws Unknown error fallback when error body is not JSON", async () => {
+  it("throws HTTP status fallback when error body is not JSON", async () => {
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: false,
       status: 503,
       json: vi.fn().mockRejectedValue(new SyntaxError("not json")),
     });
 
-    await expect(fetchProjects()).rejects.toThrow("Unknown error");
+    await expect(fetchProjects()).rejects.toThrow("HTTP 503");
   });
 
   it("returns empty array when server returns no projects", async () => {
