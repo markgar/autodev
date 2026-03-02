@@ -83,7 +83,7 @@ export function DashboardPage() {
 
       {!loading && error && (
         <div className="space-y-3">
-          <p className="text-destructive">{error}</p>
+          <p className="text-destructive">Failed to load projects</p>
           <Button variant="outline" onClick={load}>
             Retry
           </Button>
