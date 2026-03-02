@@ -1,6 +1,6 @@
 # Review Themes
 
-Last updated: Scaffolding
+Last updated: App Shell
 
 1. **tsconfig rootDir/include mismatch** — When `tsconfig.server.json` includes files outside `rootDir` (e.g., `src/shared`), set `rootDir` to the common ancestor (`src`), then update all path-dependent scripts (e.g., `start`) to match the new output layout (`dist/server/server/index.js`).
 2. **Start script not updated after tsconfig changes** — Any change to `rootDir` or `outDir` in a tsconfig must be followed immediately by updating every `package.json` script that references compiled output paths; the build succeeding is not sufficient verification.
@@ -9,3 +9,6 @@ Last updated: Scaffolding
 5. **No-op try/catch** — A `catch` block that only re-throws is dead code; either remove the try/catch or add meaningful handling (log, transform, clean up) before re-throwing.
 6. **Spec-listed devDependencies omitted** — Packages explicitly listed in the milestone spec (e.g., `@vitest/ui`) must be present in `package.json`; omission is a spec deviation and breaks documented developer workflows.
 7. **`noEmit` missing from Vite-compiled tsconfigs** — Client-side TypeScript compiled exclusively by Vite should have `"noEmit": true` in its tsconfig to prevent accidental `tsc` invocations from scattering `.js` files into the source tree.
+8. **shadcn/ui CSS variables never initialised** — Calling `shadcn/ui init` or manually adopting its component patterns requires two setup steps that are often skipped: (a) adding CSS custom property definitions (`:root { --background: ...; }`) to the global CSS file and (b) extending `tailwind.config.js` to map those variables to Tailwind color utilities. Without both steps, all `bg-background`, `bg-accent`, `bg-sidebar`, etc. classes are dead and the UI renders with no colours.
+9. **Dead imports left after refactoring** — When a component's implementation changes from the original design (e.g., using `NavLink` directly instead of `SidebarMenuButton`), remove imports that are no longer referenced; unused imports mislead readers into thinking a dependency is active.
+10. **Interactive-only elements must be keyboard-accessible** — Any `<div>` or `<span>` with an `onClick` handler used for UI control (e.g., modal backdrop close) must also have `role`, `tabIndex`, and `onKeyDown`; omitting these makes the control invisible to keyboard and assistive-technology users.
