@@ -80,6 +80,7 @@ export async function deleteSampleSpec(name: string): Promise<void> {
   }
 }
 
+export function formatDate(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   if (diffMs <= 0) return "just now";
 
