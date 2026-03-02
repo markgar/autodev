@@ -9,12 +9,16 @@ const port = process.env.PORT ?? 3000;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const distPublicPath = process.env.NODE_ENV === "production"
+  ? join(__dirname, "../../../dist/public")
+  : join(__dirname, "../../dist/public");
+
 app.use(express.json());
 app.use("/api", apiRouter);
-app.use(express.static(join(__dirname, "../../../dist/public")));
+app.use(express.static(distPublicPath));
 
 app.get("*", (_req, res) => {
-  res.sendFile(join(__dirname, "../../../dist/public/index.html"));
+  res.sendFile(join(distPublicPath, "index.html"));
 });
 
 createCosmosContainers().catch((err) => {
