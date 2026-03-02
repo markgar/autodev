@@ -39,7 +39,7 @@ sampleSpecsRouter.get("/:name", async (req, res) => {
 sampleSpecsRouter.post("/", (req, res, next) => {
   upload.single("file")(req, res, (err) => {
     if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
-      res.status(413).json({ error: "File too large (max 1 MB)" });
+      res.status(413).json({ error: `File too large (max ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB)` });
       return;
     }
     if (err) {
