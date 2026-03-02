@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fetchProjects, fetchSampleSpecs, fetchProject, fetchProjectLogs, createProject, formatDate } from "./api.js";
+import { fetchProjects, fetchSampleSpecs, fetchProject, fetchProjectLogs, createProject, formatDate, fetchSampleSpecContent, uploadSampleSpec, deleteSampleSpec } from "./api.js";
 
 const sampleProject = {
   id: "proj-1",
@@ -351,5 +351,155 @@ describe("fetchProjectLogs", () => {
     });
 
     await expect(fetchProjectLogs("proj-1")).rejects.toThrow("HTTP 503");
+  });
+});
+
+describe("fetchSampleSpecContent", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("calls GET /api/sample-specs/:name with encoded name", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ name: "my spec.md", content: "# Hello" }),
+    });
+
+    await fetchSampleSpecContent("my spec.md");
+    expect(fetch).toHaveBeenCalledWith("/api/sample-specs/my%20spec.md");
+  });
+
+  it("returns name and content on successful response", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ name: "minimal.md", content: "# Minimal" }),
+    });
+
+    const result = await fetchSampleSpecContent("minimal.md");
+    expect(result).toEqual({ name: "minimal.md", content: "# Minimal" });
+  });
+
+  it("throws 'Spec not found' error when server returns 404", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 404,
+      json: vi.fn().mockResolvedValue({ error: "Spec not found" }),
+    });
+
+    await expect(fetchSampleSpecContent("unknown.md")).rejects.toThrow("Spec not found");
+  });
+
+  it("throws HTTP status fallback when error body is not JSON", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: vi.fn().mockRejectedValue(new SyntaxError("not json")),
+    });
+
+    await expect(fetchSampleSpecContent("spec.md")).rejects.toThrow("HTTP 500");
+  });
+});
+
+describe("uploadSampleSpec", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("calls POST /api/sample-specs with FormData body", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ name: "spec.md" }),
+    });
+
+    const file = new File(["# Spec"], "spec.md", { type: "text/markdown" });
+    await uploadSampleSpec(file);
+
+    expect(fetch).toHaveBeenCalledWith("/api/sample-specs", expect.objectContaining({ method: "POST" }));
+    const callArg = (fetch as ReturnType<typeof vi.fn>).mock.calls[0][1];
+    expect(callArg.body).toBeInstanceOf(FormData);
+  });
+
+  it("returns name on successful upload", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ name: "my-spec.md" }),
+    });
+
+    const file = new File(["# Content"], "my-spec.md", { type: "text/markdown" });
+    const result = await uploadSampleSpec(file);
+    expect(result).toEqual({ name: "my-spec.md" });
+  });
+
+  it("throws 'File too large' error when server returns 413", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 413,
+      json: vi.fn().mockResolvedValue({ error: "File too large (max 1 MB)" }),
+    });
+
+    const file = new File(["x".repeat(2 * 1024 * 1024)], "big.md", { type: "text/markdown" });
+    await expect(uploadSampleSpec(file)).rejects.toThrow("File too large (max 1 MB)");
+  });
+
+  it("throws error with server message on non-OK response", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 400,
+      json: vi.fn().mockResolvedValue({ error: "File must be a .md file" }),
+    });
+
+    const file = new File(["data"], "spec.txt", { type: "text/plain" });
+    await expect(uploadSampleSpec(file)).rejects.toThrow("File must be a .md file");
+  });
+});
+
+describe("deleteSampleSpec", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("calls DELETE /api/sample-specs/:name with encoded name", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: true });
+
+    await deleteSampleSpec("my spec.md");
+    expect(fetch).toHaveBeenCalledWith("/api/sample-specs/my%20spec.md", { method: "DELETE" });
+  });
+
+  it("resolves without error on successful deletion", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: true });
+
+    await expect(deleteSampleSpec("spec.md")).resolves.toBeUndefined();
+  });
+
+  it("throws error with server message on non-OK response", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: vi.fn().mockResolvedValue({ error: "Delete failed" }),
+    });
+
+    await expect(deleteSampleSpec("spec.md")).rejects.toThrow("Delete failed");
+  });
+
+  it("throws HTTP status fallback when error body is not JSON", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: vi.fn().mockRejectedValue(new SyntaxError("not json")),
+    });
+
+    await expect(deleteSampleSpec("spec.md")).rejects.toThrow("HTTP 503");
   });
 });
