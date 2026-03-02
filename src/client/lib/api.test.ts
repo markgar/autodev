@@ -213,13 +213,13 @@ describe("createProject", () => {
     await expect(createProject({ name: "Dupe App", specName: "minimal.md" })).rejects.toThrow("Project name already exists");
   });
 
-  it("throws Unknown error fallback when error body is not JSON", async () => {
+  it("throws HTTP status fallback when error body is not JSON", async () => {
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: false,
       status: 503,
       json: vi.fn().mockRejectedValue(new SyntaxError("not json")),
     });
 
-    await expect(createProject({ name: "App", specName: "spec.md" })).rejects.toThrow("Unknown error");
+    await expect(createProject({ name: "App", specName: "spec.md" })).rejects.toThrow("HTTP 503");
   });
 });

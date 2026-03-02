@@ -80,16 +80,16 @@ describe("DashboardPage", () => {
   it("New Project button navigates to /projects/new", async () => {
     (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([]);
     renderPage();
-    await waitFor(() => screen.getByRole("button", { name: "New Project" }));
-    fireEvent.click(screen.getByRole("button", { name: "New Project" }));
+    const button = await screen.findByRole("button", { name: "New Project" });
+    fireEvent.click(button);
     await waitFor(() => expect(screen.getByTestId("new-project-page")).toBeTruthy());
   });
 
   it("Create your first project button navigates to /projects/new", async () => {
     (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([]);
     renderPage();
-    await waitFor(() => screen.getByRole("button", { name: "Create your first project" }));
-    fireEvent.click(screen.getByRole("button", { name: "Create your first project" }));
+    const button = await screen.findByRole("button", { name: "Create your first project" });
+    fireEvent.click(button);
     await waitFor(() => expect(screen.getByTestId("new-project-page")).toBeTruthy());
   });
 
@@ -99,7 +99,7 @@ describe("DashboardPage", () => {
     (fetchProjects as ReturnType<typeof vi.fn>).mockResolvedValue([older, newer]);
     renderPage();
     await waitFor(() => {
-      const names = screen.getAllByText(/App/).map((el) => el.textContent);
+      const names = screen.getAllByTestId("project-name").map((el) => el.textContent);
       expect(names[0]).toContain("Newer App");
     });
   });

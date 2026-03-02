@@ -35,7 +35,7 @@ function DesktopTable({ projects, navigate }: { projects: Project[]; navigate: (
             onKeyDown={(e) => e.key === "Enter" && navigate(`/projects/${p.id}`)}
             className="border-b cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            <td className="py-3 pr-4 font-medium">{p.name}</td>
+            <td className="py-3 pr-4 font-medium" data-testid="project-name">{p.name}</td>
             <td className="py-3 text-muted-foreground">{formatDate(p.createdAt)}</td>
           </tr>
         ))}
