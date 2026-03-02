@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Eye, Loader2, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,9 +25,9 @@ import {
   deleteSampleSpec,
   fetchSampleSpecContent,
   fetchSampleSpecs,
+  formatDate,
   uploadSampleSpec,
 } from "@/lib/api";
-import { formatDate } from "@/lib/api";
 import { formatFileSize } from "@/lib/utils";
 import type { SampleSpec } from "../../shared/types";
 
@@ -206,7 +206,7 @@ function ViewModal({
     a.href = url;
     a.download = name;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   }
 
   return (
@@ -236,9 +236,10 @@ export function SampleSpecsAdminPage() {
   const [uploading, setUploading] = useState(false);
   const [deletingSet, setDeletingSet] = useState<Set<string>>(new Set());
   const [viewModal, setViewModal] = useState<{ name: string; content: string } | null>(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  function loadSpecs() {
+  const loadSpecs = useCallback(function loadSpecs() {
     setLoading(true);
     setError(null);
     fetchSampleSpecs()
@@ -251,11 +252,11 @@ export function SampleSpecsAdminPage() {
         setLoading(false);
         toast.error(`Failed to load specs: ${err.message}`);
       });
-  }
+  }, []);
 
   useEffect(() => {
     loadSpecs();
-  }, []);
+  }, [loadSpecs]);
 
   async function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -278,6 +279,7 @@ export function SampleSpecsAdminPage() {
     try {
       const result = await fetchSampleSpecContent(name);
       setViewModal({ name: result.name, content: result.content });
+      setViewModalOpen(true);
     } catch (err) {
       toast.error(`Failed to load ${name}: ${(err as Error).message}`);
     }
@@ -358,14 +360,12 @@ export function SampleSpecsAdminPage() {
         </div>
       )}
 
-      {viewModal && (
-        <ViewModal
-          name={viewModal.name}
-          content={viewModal.content}
-          open={true}
-          onClose={() => setViewModal(null)}
-        />
-      )}
+      <ViewModal
+        name={viewModal?.name ?? ""}
+        content={viewModal?.content ?? ""}
+        open={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+      />
     </div>
   );
 }
