@@ -20,7 +20,7 @@
 
 - [x] Scaffold Vite + React SPA: `index.html` (root HTML, mounts `#root`), `src/client/main.tsx` (renders `<App />`), `src/client/App.tsx` (placeholder "AutoDev" heading), `vite.config.ts` (React plugin, output `dist/public`, `/api` proxy to `http://localhost:3000`)
 
-- [ ] Configure Tailwind CSS: install `tailwindcss`, `postcss`, `autoprefixer`; create `tailwind.config.js` with content paths `["./index.html", "./src/client/**/*.{ts,tsx}"]`; create `postcss.config.js`; create `src/client/index.css` with `@tailwind base; @tailwind components; @tailwind utilities`; import `index.css` in `main.tsx`
+- [x] Configure Tailwind CSS: install `tailwindcss`, `postcss`, `autoprefixer`; create `tailwind.config.js` with content paths `["./index.html", "./src/client/**/*.{ts,tsx}"]`; create `postcss.config.js`; create `src/client/index.css` with `@tailwind base; @tailwind components; @tailwind utilities`; import `index.css` in `main.tsx`
 
 - [ ] Initialize shadcn/ui: install `@radix-ui/react-slot`, `class-variance-authority`, `clsx`, `tailwind-merge`, `tailwindcss-animate`; create `components.json` (style: default, tailwind config path, src/client/components/ui alias); add path alias `@` → `src/client` in `vite.config.ts` and `tsconfig.client.json`; create `src/client/lib/utils.ts` with `cn()` helper using `clsx` + `tailwind-merge`
 
