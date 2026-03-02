@@ -55,4 +55,16 @@ describe("formatFileSize", () => {
   it("formats whole megabytes without trailing .0", () => {
     expect(formatFileSize(1024 * 1024)).toBe("1 MB");
   });
+
+  it("returns em dash for negative input", () => {
+    expect(formatFileSize(-100)).toBe("—");
+  });
+
+  it("returns em dash for NaN", () => {
+    expect(formatFileSize(NaN)).toBe("—");
+  });
+
+  it("returns em dash for Infinity", () => {
+    expect(formatFileSize(Infinity)).toBe("—");
+  });
 });
