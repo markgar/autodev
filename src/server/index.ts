@@ -15,8 +15,12 @@ const distPublicPath = process.env.NODE_ENV === "production"
   : join(__dirname, "../../dist/public");
 
 if (!existsSync(distPublicPath)) {
-  console.error("[startup] Static assets not found at:", distPublicPath);
-  process.exit(1);
+  if (process.env.NODE_ENV === "production") {
+    console.error("[startup] Static assets not found at:", distPublicPath);
+    process.exit(1);
+  } else {
+    console.warn("[startup] Static assets not found at:", distPublicPath, "— running in API-only mode");
+  }
 }
 
 app.use(express.json());
