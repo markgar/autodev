@@ -8,7 +8,10 @@ import {
 } from "../lib/sampleSpecsService.js";
 
 const sampleSpecsRouter = Router();
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 1 * 1024 * 1024 }, // 1 MB — markdown files should be tiny
+});
 
 sampleSpecsRouter.get("/", async (_req, res) => {
   try {
@@ -32,7 +35,15 @@ sampleSpecsRouter.get("/:name", async (req, res) => {
   }
 });
 
-sampleSpecsRouter.post("/", upload.single("file"), async (req, res) => {
+sampleSpecsRouter.post("/", (req, res, next) => {
+  upload.single("file")(req, res, (err: unknown) => {
+    if (err) {
+      res.status(413).json({ error: "File too large" });
+      return;
+    }
+    next();
+  });
+}, async (req, res) => {
   if (!req.file) {
     res.status(400).json({ error: "No file uploaded" });
     return;
