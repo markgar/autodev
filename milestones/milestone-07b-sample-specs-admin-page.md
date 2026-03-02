@@ -13,7 +13,7 @@
 
 - [x] Add desktop table to `SampleSpecsAdminPage` (`hidden md:block`): columns **Filename**, **Size** (via `formatFileSize`), **Last Modified** (via `formatDate`), **Actions**; one row per spec with `border-b hover:bg-accent` styling
 
-- [ ] Add mobile card list to `SampleSpecsAdminPage` (`block md:hidden`): one card per spec with filename bold on top, size + last-modified on second line, action icon buttons (`Eye` and `Trash2`) in a row at the bottom; `min-h-[44px]` touch target on action buttons
+- [x] Add mobile card list to `SampleSpecsAdminPage` (`block md:hidden`): one card per spec with filename bold on top, size + last-modified on second line, action icon buttons (`Eye` and `Trash2`) in a row at the bottom; `min-h-[44px]` touch target on action buttons
 
 - [ ] Add Upload button in the page heading row of `SampleSpecsAdminPage`: clicking it triggers a hidden `<input type="file" accept=".md" multiple ref={fileInputRef}>` via `fileInputRef.current?.click()`; on change, calls `uploadSampleSpec` for each selected file sequentially, shows `toast.success("Uploaded {filename}")` per file or `toast.error(...)` on failure, then calls `loadSpecs()` to refresh; button shows a `<Loader2>` spinner while any upload is in progress
 
