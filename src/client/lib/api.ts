@@ -18,6 +18,19 @@ export async function fetchSampleSpecs(): Promise<SampleSpec[]> {
   return res.json();
 }
 
+export async function createProject(data: { name: string; specName: string }): Promise<Project> {
+  const res = await fetch("/api/projects", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(body.error ?? `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 export function formatDate(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   const diffSecs = Math.round(diffMs / 1000);
