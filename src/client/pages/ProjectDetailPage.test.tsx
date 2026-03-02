@@ -72,7 +72,8 @@ describe("ProjectDetailPage", () => {
   });
 
   it("shows 'Project not found' when API returns 404 error", async () => {
-    (fetchProject as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("Project not found"));
+    const err = Object.assign(new Error("Project not found"), { status: 404 });
+    (fetchProject as ReturnType<typeof vi.fn>).mockRejectedValue(err);
     (fetchProjectLogs as ReturnType<typeof vi.fn>).mockResolvedValue([]);
     renderPage();
     await waitFor(() => expect(screen.getByText("Project not found")).toBeTruthy());

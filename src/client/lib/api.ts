@@ -24,7 +24,9 @@ export async function fetchProject(id: string): Promise<Project> {
   const res = await fetch(`/api/projects/${id}`);
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-    throw new Error(body.error ?? `HTTP ${res.status}`);
+    const err = new Error(body.error ?? `HTTP ${res.status}`) as Error & { status: number };
+    err.status = res.status;
+    throw err;
   }
   return res.json();
 }
