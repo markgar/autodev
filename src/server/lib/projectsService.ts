@@ -15,7 +15,10 @@ async function createProject(name: string, specName: string): Promise<Project> {
     runCount: 0,
   };
   const { resource } = await container().items.create(doc);
-  return resource as Project;
+  if (!resource) {
+    throw new Error("Cosmos create succeeded but returned no resource");
+  }
+  return resource;
 }
 
 async function listProjects(): Promise<Project[]> {
@@ -29,4 +32,8 @@ async function getProject(id: string): Promise<Project | null> {
   return resource ?? null;
 }
 
-export { createProject, listProjects, getProject };
+async function deleteProject(id: string): Promise<void> {
+  await container().item(id, "default").delete();
+}
+
+export { createProject, listProjects, getProject, deleteProject };

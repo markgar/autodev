@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { createProject, listProjects, getProject } from "../lib/projectsService.js";
+import { createProject, listProjects, getProject, deleteProject } from "../lib/projectsService.js";
 import { getProjectLogs } from "../lib/logsService.js";
 import { getBlobServiceClient } from "../lib/blobClient.js";
 
@@ -20,7 +20,16 @@ projectsRouter.post("/", async (req, res) => {
     }
     const { name, specName } = result.data;
     const project = await createProject(name, specName);
-    await getBlobServiceClient().getContainerClient(project.id).createIfNotExists();
+    try {
+      await getBlobServiceClient().getContainerClient(project.id).createIfNotExists();
+    } catch (blobErr) {
+      try {
+        await deleteProject(project.id);
+      } catch (deleteErr) {
+        console.error("Failed to rollback Cosmos record after blob creation failure:", deleteErr);
+      }
+      throw blobErr;
+    }
     res.status(201).json(project);
   } catch (err) {
     res.status(500).json({ error: String(err) });
